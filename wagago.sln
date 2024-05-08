@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wagago", "wagago\wagago.csproj", "{065E88BC-D729-46B1-A696-482070590DDE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{065E88BC-D729-46B1-A696-482070590DDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{065E88BC-D729-46B1-A696-482070590DDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{065E88BC-D729-46B1-A696-482070590DDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{065E88BC-D729-46B1-A696-482070590DDE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
