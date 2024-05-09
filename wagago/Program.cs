@@ -3,35 +3,53 @@ namespace Wagago
 {
     public class Wagago
     {
-        static void Main(string[] args)
+        private static bool _hadError = false;
+        /**
+         * Usage: wagago file.wgo
+         *
+         * file.wgo contains code written in wagago
+         *
+         * Usage: wagago
+         *
+         * opens a prompt
+         */
+        private static void Main(string[] args)
         {
-            if (args.Length > 1)
+            switch (args.Length)
             {
-                Console.WriteLine("Usage: wagago [script]");
-                Environment.Exit(1);
-            } else if (args.Length == 1)
-            {
-                runFile(args[0]);
-            } else
-            {
-                runPrompt();
+                case > 1:
+                    Console.WriteLine("Usage: wagago [script]");
+                    // exit code 1 is for error from console usage
+                    Environment.Exit(1);
+                    break;
+                case 1:
+                    RunFile(args[0]);
+                    break;
+                default:
+                    RunPrompt();
+                    break;
             }
         }
 
-        private static void runFile(string filePath)
+        private static void RunFile(string filePath)
         {
             var contents = File.ReadAllText(filePath);
-            run(contents);
+            Run(contents);
+            
+            // TODO: create named constants for exit codes
+            // exit code 2 is for source code errors
+            if (_hadError) Environment.Exit(2);
         }
 
-        private static void runPrompt()
+        private static void RunPrompt()
         {
             try
             {
                 Console.WriteLine("> ");
                 while (Console.ReadLine() is { } line)
                 {
-                    run(line);
+                    Run(line);
+                    _hadError = false; // source code was executed successfully
                     Console.WriteLine("> ");
                 }
             }
@@ -44,15 +62,32 @@ namespace Wagago
             
         }
 
-        private static void run(string source)
+        /**
+         * Execute a line of code written in wagago
+         *
+         * Sets _hadError to true if an error is encountered
+         */
+        private static void Run(string source)
         {
-            Scanner scanner = new Scanner(source);
-            List<Token> tokens = scanner.scanTokens();
+            var scanner = new Scanner(source);
+            var tokens = scanner.scanTokens();
 
             foreach (var token in tokens)
             {
+                // placeholder
                 Console.WriteLine(token);
             }
+        }
+
+        static void error(int line, string message)
+        {
+            Report(line, "", message);
+        }
+
+        private static void Report(int line, string where, string message)
+        {
+            Console.Error.WriteLine("[line {0}] Error {1}: {2}", line, where, message);
+            _hadError = true;
         }
     }
 
