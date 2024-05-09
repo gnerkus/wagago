@@ -1,16 +1,16 @@
-﻿
-namespace Wagago
+﻿namespace Wagago
 {
     public class Wagago
     {
-        private static bool _hadError = false;
+        private static bool _hadError;
+
         /**
          * Usage: wagago file.wgo
-         *
+         * 
          * file.wgo contains code written in wagago
-         *
+         * 
          * Usage: wagago
-         *
+         * 
          * opens a prompt
          */
         private static void Main(string[] args)
@@ -35,7 +35,7 @@ namespace Wagago
         {
             var contents = File.ReadAllText(filePath);
             Run(contents);
-            
+
             // TODO: create named constants for exit codes
             // exit code 2 is for source code errors
             if (_hadError) Environment.Exit(2);
@@ -55,31 +55,27 @@ namespace Wagago
             }
             catch (IOException e)
             {
-                Console.WriteLine("{0}: The read operation could not be performed due to the " + 
-                "error", e.GetType().Name);
+                Console.WriteLine("{0}: The read operation could not be performed due to the " +
+                                  "error", e.GetType().Name);
             }
-            
-            
         }
 
         /**
          * Execute a line of code written in wagago
-         *
+         * 
          * Sets _hadError to true if an error is encountered
          */
         private static void Run(string source)
         {
             var scanner = new Scanner(source);
-            var tokens = scanner.scanTokens();
+            var tokens = scanner.ScanTokens();
 
             foreach (var token in tokens)
-            {
                 // placeholder
                 Console.WriteLine(token);
-            }
         }
 
-        static void error(int line, string message)
+        public static void error(int line, string message)
         {
             Report(line, "", message);
         }
@@ -89,23 +85,5 @@ namespace Wagago
             Console.Error.WriteLine("[line {0}] Error {1}: {2}", line, where, message);
             _hadError = true;
         }
-    }
-
-    public class Scanner
-    {
-        public Scanner(string source)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Token> scanTokens()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class Token
-    {
-        
     }
 }
