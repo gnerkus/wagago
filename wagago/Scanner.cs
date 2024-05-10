@@ -8,24 +8,24 @@
 
         private readonly Dictionary<string, TokenType> keywords = new Dictionary<string, TokenType>
         {
-            {"and", TokenType.AND },
-            {"class", TokenType.CLASS },
-            {"else", TokenType.ELSE },
-            {"false", TokenType.FALSE },
-            {"for", TokenType.FOR },
-            {"fun", TokenType.FUN },
-            {"if", TokenType.IF },
-            {"nil", TokenType.NIL },
-            {"or", TokenType.OR },
-            {"print", TokenType.PRINT },
-            {"return", TokenType.RETURN },
-            {"super", TokenType.SUPER },
-            {"this", TokenType.THIS },
-            {"true", TokenType.TRUE },
-            {"var", TokenType.VAR },
-            {"while", TokenType.WHILE },
+            { "and", TokenType.AND },
+            { "class", TokenType.CLASS },
+            { "else", TokenType.ELSE },
+            { "false", TokenType.FALSE },
+            { "for", TokenType.FOR },
+            { "fun", TokenType.FUN },
+            { "if", TokenType.IF },
+            { "nil", TokenType.NIL },
+            { "or", TokenType.OR },
+            { "print", TokenType.PRINT },
+            { "return", TokenType.RETURN },
+            { "super", TokenType.SUPER },
+            { "this", TokenType.THIS },
+            { "true", TokenType.TRUE },
+            { "var", TokenType.VAR },
+            { "while", TokenType.WHILE },
         };
-        
+
         private int _current;
         private int _start;
         private int _line = 1;
@@ -134,13 +134,13 @@
         {
             while (IsAlphaNumeric(Peek())) Advance();
 
-            var text = _source.Substring(_start, _current);
+            var text = _source.Substring(_start, _current - _start);
 
             if (!keywords.TryGetValue(text, out var type))
             {
                 type = TokenType.IDENTIFIER;
             }
-            
+
             AddToken(type);
         }
 
@@ -170,7 +170,7 @@
                 while (IsDigit(Peek())) Advance();
             }
 
-            AddToken(TokenType.NUMBER, double.Parse(_source.Substring(_start, _current)));
+            AddToken(TokenType.NUMBER, double.Parse(_source.Substring(_start, _current - _start)));
         }
 
         private char PeekNext()
@@ -197,7 +197,7 @@
             Advance();
 
             // Trim the surrounding quotes
-            var value = _source.Substring(_start + 1, _current - 1);
+            var value = _source.Substring(_start + 1, _current - _start - 1);
             AddToken(TokenType.STRING, value);
         }
 
@@ -238,7 +238,7 @@
 
         private void AddToken(TokenType type, object literal)
         {
-            var text = _source.Substring(_start, _current);
+            var text = _source.Substring(_start, _current - _start);
             _tokens.Add(new Token(type, text, literal, _line));
         }
     }
