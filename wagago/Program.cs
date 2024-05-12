@@ -71,8 +71,8 @@
             var tokens = scanner.ScanTokens();
 
             foreach (var token in tokens)
-                // placeholder
-                Console.WriteLine(token);
+                // TODO: handle tokens
+                Console.WriteLine(token.toString());
         }
 
         public static void error(int line, string message)
