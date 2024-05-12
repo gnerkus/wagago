@@ -104,9 +104,10 @@
                         // A comment goes until the end of the line; don't add token
                         while (Peek() != '\n' && !IsAtEnd())
                             Advance();
+                    else if (Match('*'))
+                        HandleBlockComment();
                     else
                         AddToken(TokenType.SLASH);
-
                     break;
                 case ' ':
                 case '\r':
@@ -201,6 +202,30 @@
             AddToken(TokenType.STRING, value);
         }
 
+        private void HandleBlockComment()
+        {
+            while (Peek() != '*' && !IsAtEnd())
+            {
+                // handle multi-line comment
+                if (Peek() == '\n') _line++;
+                Advance();
+            }
+            
+            if (IsAtEnd())
+            {
+                Wagago.error(_line, "Unterminated block-style comment.");
+                return;
+            }
+
+            if (Peek(1) != '/')
+            {
+                Wagago.error(_line, "Improperly terminated block-style comment.");
+                return;
+            }
+
+            Advance(2);
+        }
+
         /**
          * Lookahead (look at the character after the one being scanned)
          */
@@ -221,14 +246,32 @@
             return IsAtEnd() ? '\0' : _sourceCharArray[_current];
         }
 
+        private char Peek(int count)
+        {
+            return IsAtEnd() ? '\0' : _sourceCharArray[_current + count];
+        }
+
         private bool IsAtEnd()
         {
             return _current >= _source.Length;
         }
 
+        /**
+         * Move the cursor forward
+         */
         private char Advance()
         {
             return _sourceCharArray[_current++];
+        }
+
+        /**
+         * Move the cursor forward 'count' times
+         * Return the character just behind the current cursor position
+         */
+        private char Advance(int count)
+        {
+            _current += count;
+            return _sourceCharArray[_current - 1];
         }
 
         private void AddToken(TokenType type)
