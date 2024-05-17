@@ -18,7 +18,7 @@
             switch (args.Length)
             {
                 case > 1:
-                    Console.WriteLine("Usage: wagago [script]");
+                    Console.Error.WriteLine("Usage: wagago [script]");
                     // exit code 1 is for error from console usage
                     Environment.Exit(1);
                     break;
