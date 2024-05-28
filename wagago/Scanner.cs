@@ -6,7 +6,7 @@
         private readonly char[] _sourceCharArray;
         private readonly List<Token> _tokens = new();
 
-        private readonly Dictionary<string, TokenType> keywords = new Dictionary<string, TokenType>
+        private readonly Dictionary<string, TokenType> keywords = new()
         {
             { "and", TokenType.AND },
             { "class", TokenType.CLASS },
@@ -23,12 +23,12 @@
             { "this", TokenType.THIS },
             { "true", TokenType.TRUE },
             { "var", TokenType.VAR },
-            { "while", TokenType.WHILE },
+            { "while", TokenType.WHILE }
         };
 
         private int _current;
-        private int _start;
         private int _line = 1;
+        private int _start;
 
         public Scanner(string source)
         {
@@ -137,10 +137,7 @@
 
             var text = _source.Substring(_start, _current - _start);
 
-            if (!keywords.TryGetValue(text, out var type))
-            {
-                type = TokenType.IDENTIFIER;
-            }
+            if (!keywords.TryGetValue(text, out var type)) type = TokenType.IDENTIFIER;
 
             AddToken(type);
         }
@@ -210,7 +207,7 @@
                 if (Peek() == '\n') _line++;
                 Advance();
             }
-            
+
             if (IsAtEnd())
             {
                 Wagago.error(_line, "Unterminated block-style comment.");
