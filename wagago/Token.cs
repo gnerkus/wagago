@@ -2,7 +2,7 @@
 {
     public class Token
     {
-        private readonly string lexeme;
+        public readonly string lexeme;
         private readonly int line;
         private readonly object literal;
         private readonly TokenType type;

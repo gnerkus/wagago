@@ -29,22 +29,22 @@
 
         string IVisitor<string>.VisitBinaryExpr(Binary expr)
         {
-            throw new NotImplementedException();
+            return Parenthesize(expr.Operatr.lexeme, expr.Left, expr.Right);
         }
 
         string IVisitor<string>.VisitGroupingExpr(Grouping expr)
         {
-            throw new NotImplementedException();
+            return Parenthesize("group", expr.Expression);
         }
 
         string IVisitor<string>.VisitLiteralExpr(Literal expr)
         {
-            throw new NotImplementedException();
+            return expr.Value == null ? "nil" : expr.Value.ToString();
         }
 
         string IVisitor<string>.VisitUnaryExpr(Unary expr)
         {
-            throw new NotImplementedException();
+            return Parenthesize(expr.Operatr.lexeme, expr.Right);
         }
     }
 }

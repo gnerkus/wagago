@@ -14,9 +14,9 @@ namespace Wagago
   {
     internal Binary(Expr left, Token operatr, Expr right)
     {
-      _left = left;
-      _operatr = operatr;
-      _right = right;
+      Left = left;
+      Operatr = operatr;
+      Right = right;
     }
 
     public override TR Accept<TR>(IVisitor<TR> visitor)
@@ -24,16 +24,16 @@ namespace Wagago
       return visitor.VisitBinaryExpr(this);
     }
 
-    private readonly Expr _left;
-    private readonly Token _operatr;
-    private readonly Expr _right;
+    public readonly Expr Left;
+    public readonly Token Operatr;
+    public readonly Expr Right;
   }
 
  internal class Grouping: Expr
   {
     private Grouping(Expr expression)
     {
-      _expression = expression;
+      Expression = expression;
     }
 
     public override TR Accept<TR>(IVisitor<TR> visitor)
@@ -41,13 +41,13 @@ namespace Wagago
       return visitor.VisitGroupingExpr(this);
     }
 
-    private readonly Expr _expression;
+    public readonly Expr Expression;
   }
  internal class Literal: Expr
   {
     private Literal(object value)
     {
-      _value = value;
+      Value = value;
     }
 
     public override TR Accept<TR>(IVisitor<TR> visitor)
@@ -55,14 +55,14 @@ namespace Wagago
       return visitor.VisitLiteralExpr(this);
     }
 
-    private readonly object _value;
+    public readonly object Value;
   }
  internal class Unary: Expr
   {
     private Unary(Token operatr, Expr right)
     {
-      _operatr = operatr;
-      _right = right;
+      Operatr = operatr;
+      Right = right;
     }
 
     public override TR Accept<TR>(IVisitor<TR> visitor)
@@ -70,7 +70,7 @@ namespace Wagago
       return visitor.VisitUnaryExpr(this);
     }
 
-    private readonly Token _operatr;
-    private readonly Expr _right;
+    public readonly Token Operatr;
+    public readonly Expr Right;
   }
 }
