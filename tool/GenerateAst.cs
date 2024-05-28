@@ -78,7 +78,7 @@
         private static void DefineType(StreamWriter writer, string baseName, string className,
             string fieldList)
         {
-            writer.WriteLine($" class {className}: {baseName}");
+            writer.WriteLine($" internal class {className}: {baseName}");
             writer.WriteLine("  {");
 
             // Constructor
