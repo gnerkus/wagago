@@ -1,8 +1,10 @@
 ﻿namespace Tool
 {
-    /**
-     * Generates a file named "Expr.cs"
-     */
+    /// <summary>
+    /// Generates classes to represent the AST that can be created from the input formal grammar
+    ///
+    /// The classes are defined in the output file Expr.cs
+    /// </summary>
     public class GenerateAst
     {
         private static void Main(string[] args)
@@ -14,6 +16,7 @@
                     Environment.Exit(1);
                     break;
                 case 1:
+                    // placeholder formal grammar
                     var outputDir = args[0];
                     DefineAst(outputDir, "Expr",
                         new List<string>
@@ -31,6 +34,12 @@
             }
         }
 
+        /// <summary>
+        ///     generate the abstract class for all expressions from a grammar
+        /// </summary>
+        /// <param name="outputDir">directory in which to place the class</param>
+        /// <param name="baseName">base name for the class</param>
+        /// <param name="types">the grammar in BNF</param>
         private static void DefineAst(string outputDir, string baseName, List<string> types)
         {
             var path = $"{outputDir}/{baseName}.cs";
@@ -59,12 +68,21 @@
         }
 
         /// <summary>
-        ///     generate the visitor interface
+        ///     generate the visitor interface <br />
+        ///     The visitor interface contains a function definition for each expression type in the grammar.
+        ///     <br />
+        ///     For example
+        ///     <code>
+        ///         interface IVisitor {
+        ///            T VisitLiteralExpr(object expr);
+        ///            T VisitGroupingExpr(Expr expr);
+        ///         }
+        ///     </code>
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="baseName"></param>
-        /// <param name="types"></param>
-        private static void DefineVisitor(StreamWriter writer, string baseName, List<string> types)
+        /// <param name="writer">TextWriter instance for writing to output file</param>
+        /// <param name="baseName">base name for the expression class</param>
+        /// <param name="types">the grammar in BNF, represented as a List</param>
+        private static void DefineVisitor(TextWriter writer, string baseName, IEnumerable<string> types)
         {
             writer.WriteLine(" internal interface IVisitor<out TR> {");
 
@@ -75,7 +93,14 @@
             writer.WriteLine("  }");
         }
 
-        private static void DefineType(StreamWriter writer, string baseName, string className,
+        /// <summary>
+        /// Defines the class for each expression type in the grammar
+        /// </summary>
+        /// <param name="writer">TextWriter instance</param>
+        /// <param name="baseName">base name for the expression class</param>
+        /// <param name="className">name of the expression type</param>
+        /// <param name="fieldList">parameters for the constructor of the expression class</param>
+        private static void DefineType(TextWriter writer, string baseName, string className,
             string fieldList)
         {
             writer.WriteLine($" internal class {className}: {baseName}");
