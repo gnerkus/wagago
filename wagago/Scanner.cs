@@ -1,12 +1,15 @@
 ﻿namespace Wagago
 {
+    /// <summary>
+    ///     Consumes a flat sequence of characters and break into tokens
+    /// </summary>
     public class Scanner
     {
         private readonly string _source;
         private readonly char[] _sourceCharArray;
         private readonly List<Token> _tokens = new();
 
-        private readonly Dictionary<string, TokenType> keywords = new()
+        private readonly Dictionary<string, TokenType> _keywords = new()
         {
             { "and", TokenType.AND },
             { "class", TokenType.CLASS },
@@ -137,7 +140,7 @@
 
             var text = _source.Substring(_start, _current - _start);
 
-            if (!keywords.TryGetValue(text, out var type)) type = TokenType.IDENTIFIER;
+            if (!_keywords.TryGetValue(text, out var type)) type = TokenType.IDENTIFIER;
 
             AddToken(type);
         }
@@ -278,6 +281,8 @@
 
         private void AddToken(TokenType type, object literal)
         {
+            // At this point in the program,
+            // _current has been incremented by the Advance method
             var text = _source.Substring(_start, _current - _start);
             _tokens.Add(new Token(type, text, literal, _line));
         }

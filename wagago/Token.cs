@@ -19,5 +19,20 @@
         {
             return type + " " + lexeme + " " + literal;
         }
+
+        public TokenType GetTokenType()
+        {
+            return type;
+        }
+
+        public object GetLiteral()
+        {
+            return literal;
+        }
+
+        public int GetLine()
+        {
+            return line;
+        }
     }
 }
