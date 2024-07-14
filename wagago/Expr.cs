@@ -31,7 +31,7 @@ namespace Wagago
 
  internal class Grouping: Expr
   {
-    private Grouping(Expr expression)
+    internal Grouping(Expr expression)
     {
       Expression = expression;
     }
@@ -45,7 +45,7 @@ namespace Wagago
   }
  internal class Literal: Expr
   {
-    private Literal(object value)
+    internal Literal(object value)
     {
       Value = value;
     }
@@ -59,7 +59,7 @@ namespace Wagago
   }
  internal class Unary: Expr
   {
-    private Unary(Token operatr, Expr right)
+    internal Unary(Token operatr, Expr right)
     {
       Operatr = operatr;
       Right = right;
