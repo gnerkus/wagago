@@ -1,8 +1,11 @@
 ﻿namespace Wagago
 {
+    /// <summary>
+    /// A kind of visitor for Wagago that prints the AST to the console
+    /// </summary>
     public class AstPrinter : IVisitor<string>
     {
-        private string Print(Expr expr)
+        internal string Print(Expr expr)
         {
             return expr.Accept(this);
         }

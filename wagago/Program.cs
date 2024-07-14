@@ -70,14 +70,29 @@
             var scanner = new Scanner(source);
             var tokens = scanner.ScanTokens();
 
-            foreach (var token in tokens)
-                // TODO: handle tokens
-                Console.WriteLine(token.toString());
+            var parser = new Parser(tokens);
+            var expression = parser.Parse();
+
+            if (_hadError) return;
+
+            Console.WriteLine(new AstPrinter().Print(expression));
         }
 
         public static void error(int line, string message)
         {
             Report(line, "", message);
+        }
+
+        public static void error(Token token, string message)
+        {
+            if (token.GetTokenType() == TokenType.EOF)
+            {
+                Report(token.GetLine(), " at end", message);
+            }
+            else
+            {
+                Report(token.GetLine(), " at '" + token.lexeme + "'", message);
+            }
         }
 
         private static void Report(int line, string where, string message)
