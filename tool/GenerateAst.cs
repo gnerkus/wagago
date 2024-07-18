@@ -107,7 +107,7 @@
             writer.WriteLine("  {");
 
             // Constructor
-            writer.WriteLine($"    private {className}({fieldList})");
+            writer.WriteLine($"    internal {className}({fieldList})");
             writer.WriteLine("    {");
 
             // -- Store parameters in fields
