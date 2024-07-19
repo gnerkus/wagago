@@ -19,7 +19,7 @@
     ///         <para>We first obtain the token stream:</para>
     ///         <code>
     ///             var tokens = new Scanner("6 / 3 - 1").ScanTokens()
-    ///             tokens == [NUMBER, SLASH, NUMBER, MINUS, NUMBER]
+    ///             tokens == [NUMBER, SLASH, NUMBER, MINUS, NUMBER, EOF]
     ///         </code>
     ///         <para>From the stream, we then generate the expression:</para>
     ///         <code>
