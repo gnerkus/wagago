@@ -2,7 +2,7 @@
 {
     /// <summary>
     ///     Consumes a flat sequence of tokens to create the syntax tree
-    ///     <para>Rules are:</para>
+    ///     <para>Rules are (precedence increases downwards):</para>
     ///     <code>
     ///         expression     → equality ;
     ///         equality       → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -13,11 +13,30 @@
     ///         primary        → NUMBER | STRING | "true" | "false" | "nil"
     ///                         | ( expression ) ;
     ///     </code>
+    ///
+    ///     <example>
+    ///         For the expression "6 / 3 - 1":
+    ///         <para>We first obtain the token stream:</para>
+    ///         <code>
+    ///             var tokens = new Scanner("6 / 3 - 1").ScanTokens()
+    ///             tokens == [NUMBER, SLASH, NUMBER, MINUS, NUMBER]
+    ///         </code>
+    ///         <para>From the stream, we then generate the expression:</para>
+    ///         <code>
+    ///             var expr = new Parser(tokens).Parse()
+    ///             expr.Left // Binary (6 / 3)
+    ///             expr.Left.Left // Literal (6)
+    ///             expr.Operatr // MINUS (-)
+    ///             expr.Left.Operatr // SLASH (/)
+    ///             expr.Right // Literal (1)
+    ///         </code>
+    ///     </example>
     /// </summary>
     public class Parser
     {
         private class ParserError: SystemException {}
         
+        // source token sequence
         private readonly List<Token> _tokens;
         private int _current;
 

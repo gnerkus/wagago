@@ -5,6 +5,7 @@
     /// </summary>
     public class Scanner
     {
+        // source sequence of characters
         private readonly string _source;
         private readonly char[] _sourceCharArray;
         private readonly List<Token> _tokens = new();
