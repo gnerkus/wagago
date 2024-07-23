@@ -2,7 +2,9 @@
 {
     public class Wagago
     {
+        private static readonly Interpreter _interpreter = new Interpreter();
         private static bool _hadError;
+        private static bool _hadRuntimeError;
 
         /**
          * Usage: wagago file.wgo
@@ -38,7 +40,9 @@
 
             // TODO: create named constants for exit codes
             // exit code 2 is for source code errors
-            if (_hadError) Environment.Exit(2);
+            if (_hadError) Environment.Exit(65);
+            // exit code 3 is for runtime errors
+            if (_hadRuntimeError) Environment.Exit(70);
         }
 
         private static void RunPrompt()
@@ -75,7 +79,8 @@
 
             if (_hadError) return;
 
-            Console.WriteLine(new AstPrinter().Print(expression));
+            _interpreter.Interpret(expression);
+            // Console.WriteLine(new AstPrinter().Print(expression));
         }
 
         public static void error(int line, string message)
@@ -93,6 +98,12 @@
             {
                 Report(token.GetLine(), " at '" + token.lexeme + "'", message);
             }
+        }
+
+        public static void runtimeError(RuntimeError error)
+        {
+            Console.Error.WriteLine($"{error.Message}\n[line {error.Token.GetLine()}]");
+            _hadRuntimeError = true;
         }
 
         private static void Report(int line, string where, string message)
