@@ -21,10 +21,16 @@
                     DefineAst(outputDir, "Expr",
                         new List<string>
                         {
-                            "Binary   : Expr left, Token operatr, Expr right",
-                            "Grouping : Expr expression",
-                            "Literal  : object value",
-                            "Unary    : Token operatr, Expr right"
+                            "Binary         : Expr left, Token operatr, Expr right",
+                            "Grouping       : Expr expression",
+                            "Literal        : object value",
+                            "Unary          : Token operatr, Expr right"
+                        });
+                    DefineAst(outputDir, "Stmt",
+                        new List<string>
+                        {
+                            "Expression     : Expr expressn",
+                            "Print          : Expr expression"
                         });
                     break;
                 default:
@@ -50,9 +56,11 @@
             streamWriter.WriteLine($"  internal abstract class {baseName}");
             streamWriter.WriteLine("  {");
             streamWriter.WriteLine("    public abstract TR Accept<TR>(IVisitor<TR> visitor);");
-            streamWriter.WriteLine("  }");
+            streamWriter.WriteLine();
 
             DefineVisitor(streamWriter, baseName, types);
+
+            streamWriter.WriteLine("  }");
 
             // The AST classes
             foreach (var type in types)
@@ -84,13 +92,13 @@
         /// <param name="types">the grammar in BNF, represented as a List</param>
         private static void DefineVisitor(TextWriter writer, string baseName, IEnumerable<string> types)
         {
-            writer.WriteLine(" internal interface IVisitor<out TR> {");
+            writer.WriteLine("   internal interface IVisitor<out TR> {");
 
             foreach (var typeName in types.Select(type => type.Split(":")[0].Trim()))
                 writer.WriteLine(
-                    $"    TR Visit{typeName}{baseName}({typeName} {baseName.ToLower()});");
+                    $"      TR Visit{typeName}{baseName}({typeName} {baseName.ToLower()});");
 
-            writer.WriteLine("  }");
+            writer.WriteLine("    }");
         }
 
         /// <summary>
@@ -115,7 +123,7 @@
             foreach (var field in fields)
             {
                 var name = field.Split(" ")[1];
-                writer.WriteLine($"      _{name} = {name};");
+                writer.WriteLine($"      {name[0].ToString().ToUpper() + name.Substring(1)} = {name};");
             }
 
             writer.WriteLine("    }");
@@ -130,7 +138,9 @@
             writer.WriteLine();
             foreach (var field in fields)
             {
-                writer.WriteLine($"    private readonly {field.Replace(" ", " _")};");
+                var splitField = field.Split(" ");
+                var name = splitField[1][0].ToString().ToUpper() + splitField[1].Substring(1);
+                writer.WriteLine($"    public readonly {splitField[0]} {name};");
             }
 
 
