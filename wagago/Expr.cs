@@ -3,12 +3,13 @@ namespace Wagago
   internal abstract class Expr
   {
     public abstract TR Accept<TR>(IVisitor<TR> visitor);
-  }
- internal interface IVisitor<out TR> {
-    TR VisitBinaryExpr(Binary expr);
-    TR VisitGroupingExpr(Grouping expr);
-    TR VisitLiteralExpr(Literal expr);
-    TR VisitUnaryExpr(Unary expr);
+
+   internal interface IVisitor<out TR> {
+      TR VisitBinaryExpr(Binary expr);
+      TR VisitGroupingExpr(Grouping expr);
+      TR VisitLiteralExpr(Literal expr);
+      TR VisitUnaryExpr(Unary expr);
+    }
   }
  internal class Binary: Expr
   {
@@ -28,7 +29,6 @@ namespace Wagago
     public readonly Token Operatr;
     public readonly Expr Right;
   }
-
  internal class Grouping: Expr
   {
     internal Grouping(Expr expression)

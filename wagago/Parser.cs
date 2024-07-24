@@ -4,13 +4,18 @@
     ///     Consumes a flat sequence of tokens to create the syntax tree
     ///     <para>Rules are (precedence increases downwards):</para>
     ///     <code>
-    ///         expression     → equality ;
-    ///         equality       → comparison ( ( "!=" | "==" ) comparison )* ;
-    ///         comparison     → term ( ( gt | gte | lt | lte ) term )* ;
-    ///         term           → factor ( ( - | + ) factor )* ;
-    ///         factor         → unary ( ( / | * ) unary )* ;
-    ///         unary          → ( ! | - ) unary | primary ;
-    ///         primary        → NUMBER | STRING | "true" | "false" | "nil"
+    ///         program         → statement* EOF ;
+    ///         statement       → exprStmt
+    ///                         | printStmt ;
+    ///         exprStmt        → expression ";" ;
+    ///         printStmt       → "print" expression ";" ;
+    ///         expression      → equality ;
+    ///         equality        → comparison ( ( "!=" | "==" ) comparison )* ;
+    ///         comparison      → term ( ( gt | gte | lt | lte ) term )* ;
+    ///         term            → factor ( ( - | + ) factor )* ;
+    ///         factor          → unary ( ( / | * ) unary )* ;
+    ///         unary           → ( ! | - ) unary | primary ;
+    ///         primary         → NUMBER | STRING | "true" | "false" | "nil"
     ///                         | ( expression ) ;
     ///     </code>
     ///

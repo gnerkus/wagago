@@ -1,8 +1,8 @@
 ﻿namespace Wagago
 {
-    public class Interpreter: IVisitor<object>
+    public class Interpreter: Expr.IVisitor<object>
     {
-        object IVisitor<object>.VisitBinaryExpr(Binary expr)
+        object Expr.IVisitor<object>.VisitBinaryExpr(Binary expr)
         {
             var left = Evaluate(expr.Left);
             var right = Evaluate(expr.Right);
@@ -68,7 +68,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        object IVisitor<object>.VisitGroupingExpr(Grouping expr)
+        object Expr.IVisitor<object>.VisitGroupingExpr(Grouping expr)
         {
             return Evaluate(expr.Expression);
         }
@@ -78,7 +78,7 @@
             return expr.Accept(this);
         }
 
-        object IVisitor<object>.VisitLiteralExpr(Literal expr)
+        object Expr.IVisitor<object>.VisitLiteralExpr(Literal expr)
         {
             return expr.Value;
         }
@@ -89,7 +89,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        object IVisitor<object>.VisitUnaryExpr(Unary expr)
+        object Expr.IVisitor<object>.VisitUnaryExpr(Unary expr)
         {
             var right = Evaluate(expr.Right);
 
