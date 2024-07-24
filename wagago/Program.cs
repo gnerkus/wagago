@@ -1,8 +1,13 @@
 ﻿namespace Wagago
 {
+    /// <summary>
+    /// Custom language
+    /// 我が語 (wagago); loosely translated to "my language"
+    ///
+    /// </summary>
     public class Wagago
     {
-        private static readonly Interpreter _interpreter = new Interpreter();
+        private static readonly Interpreter Interpreter = new ();
         private static bool _hadError;
         private static bool _hadRuntimeError;
 
@@ -79,7 +84,7 @@
 
             if (_hadError) return;
 
-            _interpreter.Interpret(expression);
+            Interpreter.Interpret(expression);
             // Console.WriteLine(new AstPrinter().Print(expression));
         }
 
