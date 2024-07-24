@@ -1,13 +1,12 @@
 ﻿namespace Wagago
 {
     /// <summary>
-    /// Custom language
-    /// 我が語 (wagago); loosely translated to "my language"
-    ///
+    ///     Custom language
+    ///     我が語 (wagago); loosely translated to "my language"
     /// </summary>
     public class Wagago
     {
-        private static readonly Interpreter Interpreter = new ();
+        private static readonly Interpreter Interpreter = new();
         private static bool _hadError;
         private static bool _hadRuntimeError;
 
@@ -80,11 +79,11 @@
             var tokens = scanner.ScanTokens();
 
             var parser = new Parser(tokens);
-            var expression = parser.Parse();
+            var statements = parser.Parse();
 
             if (_hadError) return;
 
-            Interpreter.Interpret(expression);
+            Interpreter.Interpret(statements);
             // Console.WriteLine(new AstPrinter().Print(expression));
         }
 
@@ -96,13 +95,9 @@
         public static void error(Token token, string message)
         {
             if (token.GetTokenType() == TokenType.EOF)
-            {
                 Report(token.GetLine(), " at end", message);
-            }
             else
-            {
                 Report(token.GetLine(), " at '" + token.lexeme + "'", message);
-            }
         }
 
         public static void runtimeError(RuntimeError error)

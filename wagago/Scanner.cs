@@ -5,11 +5,6 @@
     /// </summary>
     public class Scanner
     {
-        // source sequence of characters
-        private readonly string _source;
-        private readonly char[] _sourceCharArray;
-        private readonly List<Token> _tokens = new();
-
         private readonly Dictionary<string, TokenType> _keywords = new()
         {
             { "and", TokenType.AND },
@@ -29,6 +24,11 @@
             { "var", TokenType.VAR },
             { "while", TokenType.WHILE }
         };
+
+        // source sequence of characters
+        private readonly string _source;
+        private readonly char[] _sourceCharArray;
+        private readonly List<Token> _tokens = new();
 
         private int _current;
         private int _line = 1;

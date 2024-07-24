@@ -18,7 +18,6 @@
     ///         primary         → NUMBER | STRING | "true" | "false" | "nil"
     ///                         | ( expression ) ;
     ///     </code>
-    ///
     ///     <example>
     ///         For the expression "6 / 3 - 1":
     ///         <para>We first obtain the token stream:</para>
@@ -39,8 +38,6 @@
     /// </summary>
     public class Parser
     {
-        private class ParserError: SystemException {}
-        
         // source token sequence
         private readonly List<Token> _tokens;
         private int _current;
@@ -50,15 +47,14 @@
             _tokens = tokens;
         }
 
-        private Expr Expression()
+        private Expr ParseExpression()
         {
             // descend into the equality rule
             return Equality();
         }
 
-        
+
         /// <summary>
-        ///
         ///     Evaluates:
         ///     <code>
         ///         equality       → comparison ( ( "!=" | "==" ) comparison )* ;
@@ -88,7 +84,6 @@
         }
 
         /// <summary>
-        ///
         ///     Evaluates
         ///     <code>
         ///         comparison     → term ( ( gt | gte | lt | lte ) term )* ;
@@ -99,7 +94,8 @@
         {
             var expr = Term();
 
-            while (Match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL))
+            while (Match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS,
+                       TokenType.LESS_EQUAL))
             {
                 var optr = Previous();
                 var right = Term();
@@ -110,7 +106,6 @@
         }
 
         /// <summary>
-        ///
         ///     Evaluates:
         ///     <code>
         ///         term           → factor ( ( - | + ) factor )* ;
@@ -130,9 +125,8 @@
 
             return expr;
         }
-        
+
         /// <summary>
-        ///
         ///     Evaluates:
         ///     <code>
         ///         factor         → unary ( ( / | * ) unary )* ;
@@ -154,7 +148,6 @@
         }
 
         /// <summary>
-        ///
         ///     Evaluates:
         ///     <code>
         ///         unary          → ( ! | - ) unary | primary ;
@@ -170,7 +163,6 @@
         }
 
         /// <summary>
-        ///
         ///     Evaluates:
         ///     <code>
         ///        primary        → NUMBER | STRING | "true" | "false" | "nil"
@@ -185,13 +177,11 @@
             if (Match(TokenType.NIL)) return new Literal(null);
 
             if (Match(TokenType.NUMBER, TokenType.STRING))
-            {
                 return new Literal(Previous().GetLiteral());
-            }
 
             if (Match(TokenType.LEFT_PAREN))
             {
-                var expr = Expression();
+                var expr = ParseExpression();
                 Consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
                 return new Grouping(expr);
             }
@@ -199,6 +189,13 @@
             throw Error(Peek(), "Expect expression.");
         }
 
+        /// <summary>
+        ///     Use a token without evaluating it.
+        /// </summary>
+        /// <param name="tokenType"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        /// <exception cref="ParserError"></exception>
         private Token Consume(TokenType tokenType, string message)
         {
             if (Check(tokenType)) return Advance();
@@ -206,7 +203,7 @@
             throw Error(Peek(), message);
         }
 
-        private ParserError Error(Token token, string message)
+        private static ParserError Error(Token token, string message)
         {
             Wagago.error(token, message);
             return new ParserError();
@@ -238,7 +235,8 @@
         }
 
         /// <summary>
-        /// checks if the current token has any of the listed types
+        ///     Checks if the current token has any of the listed types.
+        ///     <para>Advances the cursor if a match is found.</para>
         /// </summary>
         /// <param name="types">list of types to match the current token against</param>
         /// <returns>false, if the current token does not match any of the types</returns>
@@ -250,9 +248,7 @@
         }
 
         /// <summary>
-        ///
-        ///
-        /// <para>does not consume the current token</para>
+        ///     <para>does not consume the current token</para>
         /// </summary>
         /// <param name="tokenType">type to check against</param>
         /// <returns>true, if the current token is of the same type as tokenType</returns>
@@ -263,7 +259,7 @@
         }
 
         /// <summary>
-        /// consumes the current token and returns it
+        ///     consumes the current token and returns it
         /// </summary>
         /// <returns></returns>
         private Token Advance()
@@ -273,7 +269,7 @@
         }
 
         /// <summary>
-        /// checks if we've run out of tokens to parse
+        ///     checks if we've run out of tokens to parse
         /// </summary>
         /// <returns></returns>
         private bool IsAtEnd()
@@ -287,7 +283,7 @@
         }
 
         /// <summary>
-        /// returns the most recently consumed token
+        ///     returns the most recently consumed token
         /// </summary>
         /// <returns></returns>
         private Token Previous()
@@ -295,16 +291,46 @@
             return _tokens[_current - 1];
         }
 
-        internal Expr Parse()
+        internal List<Stmt> Parse()
         {
-            try
-            {
-                return Expression();
-            }
-            catch (ParserError e)
-            {
-                return null;
-            }    
+            var statements = new List<Stmt>();
+            while (!IsAtEnd()) statements.Add(Statement());
+
+            return statements;
+        }
+
+        /// <summary>
+        ///     if the next token is a 'print' then evaluate the statement as a print statement
+        ///     <para>otherwise, evaluate as an expression statement.</para>
+        ///     <para></para>
+        ///     <para>In both cases, the cursor advances after the match</para>
+        /// </summary>
+        /// <returns></returns>
+        private Stmt Statement()
+        {
+            return Match(TokenType.PRINT) ? PrintStatement() : ExpressionStatement();
+        }
+
+        /// <summary>
+        ///     the 'print' token has been consumed so we parse the expression
+        /// </summary>
+        /// <returns></returns>
+        private Stmt PrintStatement()
+        {
+            var expr = ParseExpression();
+            Consume(TokenType.SEMICOLON, "Expect ';' after value.");
+            return new Print(expr);
+        }
+
+        private Stmt ExpressionStatement()
+        {
+            var expr = ParseExpression();
+            Consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+            return new Expression(expr);
+        }
+
+        private class ParserError : SystemException
+        {
         }
     }
 }

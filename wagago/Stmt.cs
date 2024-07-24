@@ -1,40 +1,43 @@
 namespace Wagago
 {
-  internal abstract class Stmt
-  {
-    public abstract TR Accept<TR>(IVisitor<TR> visitor);
-
-   internal interface IVisitor<out TR> {
-      TR VisitExpressionStmt(Expression stmt);
-      TR VisitPrintStmt(Print stmt);
-    }
-  }
- internal class Expression: Stmt
-  {
-    internal Expression(Expr expressn)
+    internal abstract class Stmt
     {
-      Expressn = expressn;
+        public abstract TR Accept<TR>(IVisitor<TR> visitor);
+
+        internal interface IVisitor<out TR>
+        {
+            TR VisitExpressionStmt(Expression stmt);
+            TR VisitPrintStmt(Print stmt);
+        }
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    internal class Expression : Stmt
     {
-      return visitor.VisitExpressionStmt(this);
+        public readonly Expr Expressn;
+
+        internal Expression(Expr expressn)
+        {
+            Expressn = expressn;
+        }
+
+        public override TR Accept<TR>(IVisitor<TR> visitor)
+        {
+            return visitor.VisitExpressionStmt(this);
+        }
     }
 
-    public readonly Expr Expressn;
-  }
- internal class Print: Stmt
-  {
-    internal Print(Expr expression)
+    internal class Print : Stmt
     {
-      Expression = expression;
-    }
+        public readonly Expr Expression;
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
-    {
-      return visitor.VisitPrintStmt(this);
-    }
+        internal Print(Expr expression)
+        {
+            Expression = expression;
+        }
 
-    public readonly Expr Expression;
-  }
+        public override TR Accept<TR>(IVisitor<TR> visitor)
+        {
+            return visitor.VisitPrintStmt(this);
+        }
+    }
 }
