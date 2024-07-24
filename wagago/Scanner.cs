@@ -146,17 +146,17 @@
             AddToken(type);
         }
 
-        private bool IsAlpha(char c)
+        private static bool IsAlpha(char c)
         {
             return c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or '_';
         }
 
-        private bool IsAlphaNumeric(char c)
+        private static bool IsAlphaNumeric(char c)
         {
             return IsAlpha(c) || IsDigit(c);
         }
 
-        private bool IsDigit(char c)
+        private static bool IsDigit(char c)
         {
             return c is >= '0' and <= '9';
         }
@@ -199,7 +199,7 @@
             Advance();
 
             // Trim the surrounding quotes
-            var value = _source.Substring(_start + 1, _current - _start - 1);
+            var value = _source.Substring(_start + 1, _current - _start - 2);
             AddToken(TokenType.STRING, value);
         }
 
