@@ -2,6 +2,7 @@
 {
     public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
+        private Env _environment = new ();
         object Expr.IVisitor<object>.VisitBinaryExpr(Binary expr)
         {
             var left = Evaluate(expr.Left);
@@ -77,6 +78,11 @@
             return null;
         }
 
+        object Expr.IVisitor<object>.VisitVariableExpr(Variable expr)
+        {
+            return _environment.Get(expr.Name);
+        }
+
         object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
         {
             Evaluate(stmt.Expressn);
@@ -87,6 +93,25 @@
         {
             var value = Evaluate(stmt.Expression);
             Console.WriteLine(Stringify(value));
+            return null;
+        }
+
+        /// <summary>
+        /// Handle the Var statement node.
+        /// <para>Store the variable's value as null in the environment
+        /// if there is no initializer</para>
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        object Stmt.IVisitor<object>.VisitVarStmt(Var stmt)
+        {
+            object value = null;
+            if (!stmt.Initializer.Equals(null))
+            {
+                value = Evaluate(stmt.Initializer);
+            }
+            
+            _environment.Define(stmt.Identifier.lexeme, value);
             return null;
         }
 

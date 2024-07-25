@@ -25,6 +25,12 @@
             return Parenthesize(expr.Operatr.lexeme, expr.Right);
         }
 
+        string Expr.IVisitor<string>.VisitVariableExpr(Variable expr)
+        {
+            
+            throw new NotImplementedException();
+        }
+
         internal string Print(Expr expr)
         {
             return expr.Accept(this);
