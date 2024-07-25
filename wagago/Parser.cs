@@ -184,6 +184,11 @@
             if (Match(TokenType.NUMBER, TokenType.STRING))
                 return new Literal(Previous().GetLiteral());
 
+            if (Match(TokenType.IDENTIFIER))
+            {
+                return new Variable(Previous());
+            }
+
             if (Match(TokenType.LEFT_PAREN))
             {
                 var expr = ParseExpression();
@@ -214,6 +219,10 @@
             return new ParserError();
         }
 
+        /// <summary>
+        /// Error recovery.
+        /// <para>Get the parser back to trying to parse the beginning of the next statement</para>
+        /// </summary>
         private void Synchronize()
         {
             Advance();
@@ -296,12 +305,58 @@
             return _tokens[_current - 1];
         }
 
+        /// <summary>
+        /// Returns a list of declarations according to the program's grammar
+        /// </summary>
+        /// <returns></returns>
         internal List<Stmt> Parse()
         {
             var statements = new List<Stmt>();
-            while (!IsAtEnd()) statements.Add(Statement());
+            while (!IsAtEnd()) statements.Add(Declaration());
 
             return statements;
+        }
+
+        /// <summary>
+        /// Parse a declaration
+        /// </summary>
+        /// <returns></returns>
+        private Stmt Declaration()
+        {
+            try
+            {
+                return Match(TokenType.VAR) ? VarDeclaration() : Statement();
+            }
+            catch (ParserError error)
+            {
+                Synchronize();
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Parsed the statement after the "var" keyword and handles it as either a variable
+        /// definition (assignment) or declaration.
+        /// <para>For example, it parses the "a = 2" in "var a = 2"</para>
+        /// </summary>
+        /// <returns>a Var statement node</returns>
+        private Stmt VarDeclaration()
+        {
+            // 1. get the identifier
+            var name = Consume(TokenType.IDENTIFIER, "Expect variable name");
+
+            Expr initializer = null;
+            
+            // 2. if the next token is "=", we handle the variable definition
+            // and parse the expression that follows
+            // if not, then we handle the statement as a variable declaration
+            if (Match(TokenType.EQUAL))
+            {
+                initializer = ParseExpression();
+            }
+
+            Consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+            return new Var(name, initializer);
         }
 
         /// <summary>
