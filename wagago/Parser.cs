@@ -4,7 +4,10 @@
     ///     Consumes a flat sequence of tokens to create the syntax tree
     ///     <para>Rules are (precedence increases downwards):</para>
     ///     <code>
-    ///         program         → statement* EOF ;
+    ///         program         → declaration* EOF ;
+    ///         declaration     → varDecl
+    ///                         | statement ;
+    ///         varDecl         → "var" IDENTIFIER ( "=" expression )? ";" ;
     ///         statement       → exprStmt
     ///                         | printStmt ;
     ///         exprStmt        → expression ";" ;
@@ -15,8 +18,10 @@
     ///         term            → factor ( ( - | + ) factor )* ;
     ///         factor          → unary ( ( / | * ) unary )* ;
     ///         unary           → ( ! | - ) unary | primary ;
-    ///         primary         → NUMBER | STRING | "true" | "false" | "nil"
-    ///                         | ( expression ) ;
+    ///         primary         → "true" | "false" | "nil"
+    ///                         | NUMBER | STRING
+    ///                         | "(" expression ")"
+    ///                         | IDENTIFIER ;
     ///     </code>
     ///     <example>
     ///         For the expression "6 / 3 - 1":

@@ -16,7 +16,6 @@
                     Environment.Exit(1);
                     break;
                 case 1:
-                    // placeholder formal grammar
                     var outputDir = args[0];
                     DefineAst(outputDir, "Expr",
                         new List<string>
@@ -24,13 +23,15 @@
                             "Binary         : Expr left, Token operatr, Expr right",
                             "Grouping       : Expr expression",
                             "Literal        : object value",
-                            "Unary          : Token operatr, Expr right"
+                            "Unary          : Token operatr, Expr right",
+                            "Variable       : Token name" // fetch the associated value, using name
                         });
                     DefineAst(outputDir, "Stmt",
                         new List<string>
                         {
                             "Expression     : Expr expressn",
-                            "Print          : Expr expression"
+                            "Print          : Expr expression",
+                            "Var            : Token identifier, Expr initializer"
                         });
                     break;
                 default:
