@@ -20,6 +20,7 @@
                     DefineAst(outputDir, "Expr",
                         new List<string>
                         {
+                            "Assign         : Token identifier, Expr value",
                             "Binary         : Expr left, Token operatr, Expr right",
                             "Grouping       : Expr expression",
                             "Literal        : object value",
@@ -32,6 +33,7 @@
                             "Expression     : Expr expressn",
                             "Print          : Expr expression",
                             "Var            : Token identifier, Expr initializer"
+                            
                         });
                     break;
                 default:
