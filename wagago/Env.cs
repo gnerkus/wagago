@@ -2,8 +2,19 @@
 {
     public class Env
     {
+        private readonly Env? _enclosing;
         private readonly Dictionary<string, object> _values = new ();
 
+        public Env()
+        {
+            _enclosing = null;
+        }
+
+        public Env(Env? enclosing)
+        {
+            _enclosing = enclosing;
+        }
+        
         public void Define(string name, object value)
         {
             _values.Add(name, value);
@@ -25,14 +36,25 @@
                 return _values[name.lexeme];
             }
 
+            if (_enclosing != null)
+            {
+                return _enclosing.Get(name);
+            }
+
             throw new RuntimeError(name, $"Undefined variable '{name.lexeme}'.");
         }
 
         public void Assign(Token name, object value)
         {
-            if (!_values.ContainsKey(name.lexeme))
+            if (_values.ContainsKey(name.lexeme))
+            {
+                _values[name.lexeme] = value;
+                return;
+            }
+
+            if (_enclosing == null)
                 throw new RuntimeError(name, $"Undefined variable '{name.lexeme}'.");
-            _values[name.lexeme] = value;
+            _enclosing.Assign(name, value);
         }
     }
 }
