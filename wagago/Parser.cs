@@ -57,7 +57,31 @@
         private Expr ParseExpression()
         {
             // descend into the equality rule
-            return Equality();
+            return Assignment();
+        }
+
+        private Expr Assignment()
+        {
+            // 1. keep evaluating until you reach `primary` which would return an IDENTIFIER
+            // cursor moves forward
+            var expr = Equality();
+
+            // 2. return the identifier if there is no assignment via presence of "="
+            if (!Match(TokenType.EQUAL)) return expr;
+            var equals = Previous();
+            // 3. evaluate the r-value (right hand side)
+            var value = Assignment();
+
+            // 4. check if the l-value is a variable i.e a 'memory' location
+            if (expr is Variable variable)
+            {
+                var name = variable.Name;
+                return new Assign(name, value);
+            }
+
+            Error(equals, "Invalid assignment target.");
+
+            return expr;
         }
 
 

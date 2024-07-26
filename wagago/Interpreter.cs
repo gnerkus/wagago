@@ -3,6 +3,7 @@
     public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
         private Env _environment = new ();
+
         object Expr.IVisitor<object>.VisitBinaryExpr(Binary expr)
         {
             var left = Evaluate(expr.Left);
@@ -113,6 +114,13 @@
             
             _environment.Define(stmt.Identifier.lexeme, value);
             return null;
+        }
+
+        object Expr.IVisitor<object>.VisitAssignExpr(Assign expr)
+        {
+            var value = Evaluate(expr.Value);
+            _environment.Assign(expr.Identifier, value);
+            return value;
         }
 
         /// <summary>
