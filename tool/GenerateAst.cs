@@ -30,6 +30,7 @@
                     DefineAst(outputDir, "Stmt",
                         new List<string>
                         {
+                            "Block          : List<Stmt> statements",
                             "Expression     : Expr expressn",
                             "Print          : Expr expression",
                             "Var            : Token identifier, Expr initializer"

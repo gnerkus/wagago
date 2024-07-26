@@ -9,7 +9,9 @@
     ///                         | statement ;
     ///         varDecl         → "var" IDENTIFIER ( "=" expression )? ";" ;
     ///         statement       → exprStmt
-    ///                         | printStmt ;
+    ///                         | printStmt
+    ///                         | block ;
+    ///         block           → "{" declaration* "}" ;
     ///         exprStmt        → expression ";" ;
     ///         printStmt       → "print" expression ";" ;
     ///         expression      → assignment ;
@@ -394,7 +396,29 @@
         /// <returns></returns>
         private Stmt Statement()
         {
-            return Match(TokenType.PRINT) ? PrintStatement() : ExpressionStatement();
+            if (Match(TokenType.PRINT))
+            {
+                return PrintStatement();
+            }
+
+            if (Match(TokenType.LEFT_BRACE))
+            {
+                return new Block(ParserBlock());
+            }
+            return ExpressionStatement();
+        }
+
+        private List<Stmt> ParserBlock()
+        {
+            var statements = new List<Stmt>();
+
+            while (!Check(TokenType.RIGHT_BRACE) && !IsAtEnd())
+            {
+                statements.Add(Declaration());
+            }
+
+            Consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+            return statements;
         }
 
         /// <summary>

@@ -84,6 +84,12 @@
             return _environment.Get(expr.Name);
         }
 
+        object Stmt.IVisitor<object>.VisitBlockStmt(Block stmt)
+        {
+            ExecuteBlock(stmt.Statements, new Env(_environment));
+            return null;
+        }
+
         object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
         {
             Evaluate(stmt.Expressn);
@@ -142,6 +148,25 @@
         private object Evaluate(Expr expr)
         {
             return expr.Accept(this);
+        }
+        
+        private void ExecuteBlock(List<Stmt> statements, Env blockEnv)
+        {
+            var previous = _environment;
+
+            try
+            {
+                _environment = blockEnv;
+
+                foreach (var stmt in statements)
+                {
+                    Execute(stmt);
+                }
+            }
+            finally
+            {
+                _environment = previous;
+            }
         }
         
         /// <summary>

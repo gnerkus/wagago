@@ -5,10 +5,25 @@ namespace Wagago
     public abstract TR Accept<TR>(IVisitor<TR> visitor);
 
    internal interface IVisitor<out TR> {
+      TR VisitBlockStmt(Block stmt);
       TR VisitExpressionStmt(Expression stmt);
       TR VisitPrintStmt(Print stmt);
       TR VisitVarStmt(Var stmt);
     }
+  }
+ internal class Block: Stmt
+  {
+    internal Block(List<Stmt> statements)
+    {
+      Statements = statements;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitBlockStmt(this);
+    }
+
+    public readonly List<Stmt> Statements;
   }
  internal class Expression: Stmt
   {
