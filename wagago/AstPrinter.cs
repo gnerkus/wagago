@@ -5,6 +5,8 @@
     /// </summary>
     public class AstPrinter : Expr.IVisitor<string>
     {
+        
+
         string Expr.IVisitor<string>.VisitBinaryExpr(Binary expr)
         {
             return Parenthesize(expr.Operatr.lexeme, expr.Left, expr.Right);
@@ -28,6 +30,11 @@
         string Expr.IVisitor<string>.VisitVariableExpr(Variable expr)
         {
             
+            throw new NotImplementedException();
+        }
+        
+        string Expr.IVisitor<string>.VisitAssignExpr(Assign expr)
+        {
             throw new NotImplementedException();
         }
 

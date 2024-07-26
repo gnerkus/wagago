@@ -5,12 +5,29 @@ namespace Wagago
     public abstract TR Accept<TR>(IVisitor<TR> visitor);
 
    internal interface IVisitor<out TR> {
+      TR VisitAssignExpr(Assign expr);
       TR VisitBinaryExpr(Binary expr);
       TR VisitGroupingExpr(Grouping expr);
       TR VisitLiteralExpr(Literal expr);
       TR VisitUnaryExpr(Unary expr);
       TR VisitVariableExpr(Variable expr);
     }
+  }
+ internal class Assign: Expr
+  {
+    internal Assign(Token identifier, Expr value)
+    {
+      Identifier = identifier;
+      Value = value;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitAssignExpr(this);
+    }
+
+    public readonly Token Identifier;
+    public readonly Expr Value;
   }
  internal class Binary: Expr
   {
