@@ -27,5 +27,12 @@
 
             throw new RuntimeError(name, $"Undefined variable '{name.lexeme}'.");
         }
+
+        public void Assign(Token name, object value)
+        {
+            if (!_values.ContainsKey(name.lexeme))
+                throw new RuntimeError(name, $"Undefined variable '{name.lexeme}'.");
+            _values[name.lexeme] = value;
+        }
     }
 }
