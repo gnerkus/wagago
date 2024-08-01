@@ -125,7 +125,7 @@
             {
                 Execute(stmt.ThenBranch);
             }
-            else if (!stmt.ElseBranch.Equals(null))
+            else if (stmt.ElseBranch != null)
             {
                 Execute(stmt.ElseBranch);
             }
@@ -153,7 +153,7 @@
         object Stmt.IVisitor<object>.VisitVarStmt(Var stmt)
         {
             object value = null;
-            if (!stmt.Initializer.Equals(null))
+            if (stmt.Initializer != null)
             {
                 value = Evaluate(stmt.Initializer);
             }
@@ -271,7 +271,7 @@
         /// <returns></returns>
         private static bool IsTruthy(object right)
         {
-            if (right.Equals(null)) return false;
+            if (right == null) return false;
             // `is` operator checks if the run-time type of an expression result 
             // is compatible with a given type.
             if (right is bool b) return b;
