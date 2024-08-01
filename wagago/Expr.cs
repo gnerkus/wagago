@@ -7,6 +7,7 @@ namespace Wagago
    internal interface IVisitor<out TR> {
       TR VisitAssignExpr(Assign expr);
       TR VisitBinaryExpr(Binary expr);
+      TR VisitCallExpr(Call expr);
       TR VisitGroupingExpr(Grouping expr);
       TR VisitLiteralExpr(Literal expr);
       TR VisitLogicalExpr(Logical expr);
@@ -47,6 +48,24 @@ namespace Wagago
     public readonly Expr Left;
     public readonly Token Operatr;
     public readonly Expr Right;
+  }
+ internal class Call: Expr
+  {
+    internal Call(Expr callee, Token paren, List<Expr> arguments)
+    {
+      Callee = callee;
+      Paren = paren;
+      Arguments = arguments;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitCallExpr(this);
+    }
+
+    public readonly Expr Callee;
+    public readonly Token Paren;
+    public readonly List<Expr> Arguments;
   }
  internal class Grouping: Expr
   {
