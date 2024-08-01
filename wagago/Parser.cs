@@ -9,6 +9,7 @@
     ///                         | statement ;
     ///         varDecl         → "var" IDENTIFIER ( "=" expression )? ";" ;
     ///         statement       → exprStmt
+    ///                         | forStmt
     ///                         | ifStmt
     ///                         | printStmt
     ///                         | whileStmt
@@ -17,6 +18,9 @@
     ///         ifStmt          → "if" "(" expression ")" statement
     ///                         ( "else" statement )? ;
     ///         whileStmt       → "while" "(" expression ")" statement ;
+    ///         forStmt         → "for" "(" ( varDecl | exprStmt |  ";" )
+    ///                         expression? ";"
+    ///                         expression? ")" statement ;
     ///         exprStmt        → expression ";" ;
     ///         printStmt       → "print" expression ";" ;
     ///         expression      → assignment ;
@@ -430,6 +434,7 @@
         /// <returns></returns>
         private Stmt Statement()
         {
+            if (Match(TokenType.FOR)) return ForStatement();
             if (Match(TokenType.IF)) return IfStatement();
             if (Match(TokenType.PRINT)) return PrintStatement();
             if (Match(TokenType.WHILE)) return WhileStatement();
@@ -437,6 +442,8 @@
             if (Match(TokenType.LEFT_BRACE)) return new Block(ParserBlock());
             return ExpressionStatement();
         }
+
+        
 
         private List<Stmt> ParserBlock()
         {
@@ -494,6 +501,55 @@
             var body = Statement();
 
             return new While(condition, body);
+        }
+        
+        private Stmt ForStatement()
+        {
+            Consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
+
+            Stmt initializer;
+            if (Match(TokenType.SEMICOLON))
+            {
+                initializer = null;
+            } else if (Match(TokenType.VAR))
+            {
+                initializer = VarDeclaration();
+            }
+            else
+            {
+                initializer = ExpressionStatement();
+            }
+
+            Expr condition = null;
+            if (!Check(TokenType.SEMICOLON))
+            {
+                condition = ParseExpression();
+            }
+            Consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
+
+            Expr increment = null;
+            if (!Check(TokenType.RIGHT_PAREN))
+            {
+                increment = ParseExpression();
+            }
+            Consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.");
+
+            var body = Statement();
+
+            if (!increment.Equals(null))
+            {
+                body = new Block(new List<Stmt> {body, new Expression(increment)});
+            }
+
+            if (condition.Equals(null)) condition = new Literal(true);
+            body = new While(condition, body);
+
+            if (!initializer.Equals(null))
+            {
+                body = new Block(new List<Stmt> {initializer, body});
+            }
+            
+            return body;
         }
 
         private class ParserError : SystemException
