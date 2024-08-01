@@ -9,9 +9,12 @@
     ///                         | statement ;
     ///         varDecl         → "var" IDENTIFIER ( "=" expression )? ";" ;
     ///         statement       → exprStmt
+    ///                         | ifStmt
     ///                         | printStmt
     ///                         | block ;
     ///         block           → "{" declaration* "}" ;
+    ///         ifStmt          → "if" "(" expression ")" statement
+    ///                         ( "else" statement )? ;
     ///         exprStmt        → expression ";" ;
     ///         printStmt       → "print" expression ";" ;
     ///         expression      → assignment ;
@@ -396,15 +399,10 @@
         /// <returns></returns>
         private Stmt Statement()
         {
-            if (Match(TokenType.PRINT))
-            {
-                return PrintStatement();
-            }
+            if (Match(TokenType.IF)) return IfStatement();
+            if (Match(TokenType.PRINT)) return PrintStatement();
 
-            if (Match(TokenType.LEFT_BRACE))
-            {
-                return new Block(ParserBlock());
-            }
+            if (Match(TokenType.LEFT_BRACE)) return new Block(ParserBlock());
             return ExpressionStatement();
         }
 
@@ -437,6 +435,22 @@
             var expr = ParseExpression();
             Consume(TokenType.SEMICOLON, "Expect ';' after expression.");
             return new Expression(expr);
+        }
+
+        private Stmt IfStatement()
+        {
+            Consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+            var condition = ParseExpression();
+            Consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+
+            var thenBranch = Statement();
+            Stmt elseBranch = null;
+            if (Match(TokenType.ELSE))
+            {
+                elseBranch = Statement();
+            }
+
+            return new If(condition, thenBranch, elseBranch);
         }
 
         private class ParserError : SystemException

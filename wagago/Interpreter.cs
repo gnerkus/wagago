@@ -103,6 +103,20 @@
             return null;
         }
 
+        object Stmt.IVisitor<object>.VisitIfStmt(If stmt)
+        {
+            if (IsTruthy(Evaluate(stmt.Condition)))
+            {
+                Execute(stmt.ThenBranch);
+            }
+            else if (!stmt.ElseBranch.Equals(null))
+            {
+                Execute(stmt.ElseBranch);
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Handle the Var statement node.
         /// <para>Store the variable's value as null in the environment
