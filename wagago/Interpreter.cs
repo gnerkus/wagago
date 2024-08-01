@@ -133,6 +133,16 @@
             return null;
         }
 
+        object Stmt.IVisitor<object>.VisitWhileStmt(While stmt)
+        {
+            while (IsTruthy(Evaluate(stmt.Condition)))
+            {
+                Execute(stmt.Body);
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Handle the Var statement node.
         /// <para>Store the variable's value as null in the environment

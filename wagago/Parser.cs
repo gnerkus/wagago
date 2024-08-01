@@ -11,10 +11,12 @@
     ///         statement       → exprStmt
     ///                         | ifStmt
     ///                         | printStmt
+    ///                         | whileStmt
     ///                         | block ;
     ///         block           → "{" declaration* "}" ;
     ///         ifStmt          → "if" "(" expression ")" statement
     ///                         ( "else" statement )? ;
+    ///         whileStmt       → "while" "(" expression ")" statement ;
     ///         exprStmt        → expression ";" ;
     ///         printStmt       → "print" expression ";" ;
     ///         expression      → assignment ;
@@ -430,7 +432,8 @@
         {
             if (Match(TokenType.IF)) return IfStatement();
             if (Match(TokenType.PRINT)) return PrintStatement();
-
+            if (Match(TokenType.WHILE)) return WhileStatement();
+            
             if (Match(TokenType.LEFT_BRACE)) return new Block(ParserBlock());
             return ExpressionStatement();
         }
@@ -480,6 +483,17 @@
             }
 
             return new If(condition, thenBranch, elseBranch);
+        }
+        
+        private Stmt WhileStatement()
+        {
+            Consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'");
+            var condition = ParseExpression();
+            Consume(TokenType.RIGHT_PAREN, "Expect ')' after while condition.");
+
+            var body = Statement();
+
+            return new While(condition, body);
         }
 
         private class ParserError : SystemException
