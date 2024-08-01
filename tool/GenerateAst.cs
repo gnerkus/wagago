@@ -33,6 +33,8 @@
                             "Block          : List<Stmt> statements",
                             "Expression     : Expr expressn",
                             "Print          : Expr expression",
+                            "If             : Expr condition, Stmt thenBranch," +
+                                            " Stmt elseBranch",
                             "Var            : Token identifier, Expr initializer"
                             
                         });
