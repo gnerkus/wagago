@@ -9,6 +9,7 @@ namespace Wagago
       TR VisitBinaryExpr(Binary expr);
       TR VisitGroupingExpr(Grouping expr);
       TR VisitLiteralExpr(Literal expr);
+      TR VisitLogicalExpr(Logical expr);
       TR VisitUnaryExpr(Unary expr);
       TR VisitVariableExpr(Variable expr);
     }
@@ -74,6 +75,24 @@ namespace Wagago
     }
 
     public readonly object Value;
+  }
+ internal class Logical: Expr
+  {
+    internal Logical(Expr left, Token operatr, Expr right)
+    {
+      Left = left;
+      Operatr = operatr;
+      Right = right;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitLogicalExpr(this);
+    }
+
+    public readonly Expr Left;
+    public readonly Token Operatr;
+    public readonly Expr Right;
   }
  internal class Unary: Expr
   {

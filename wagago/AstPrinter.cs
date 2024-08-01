@@ -22,6 +22,11 @@
             return expr.Value.Equals(null) ? "nil" : expr.Value.ToString() ?? "nil";
         }
 
+        string Expr.IVisitor<string>.VisitLogicalExpr(Logical expr)
+        {
+            throw new NotImplementedException();
+        }
+
         string Expr.IVisitor<string>.VisitUnaryExpr(Unary expr)
         {
             return Parenthesize(expr.Operatr.lexeme, expr.Right);
