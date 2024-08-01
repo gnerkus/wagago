@@ -36,6 +36,7 @@
                             "Print          : Expr expression",
                             "If             : Expr condition, Stmt thenBranch," +
                                             " Stmt elseBranch",
+                            "While          : Expr condition, Stmt body",
                             "Var            : Token identifier, Expr initializer"
                             
                         });

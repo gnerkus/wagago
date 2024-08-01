@@ -9,6 +9,7 @@ namespace Wagago
       TR VisitExpressionStmt(Expression stmt);
       TR VisitPrintStmt(Print stmt);
       TR VisitIfStmt(If stmt);
+      TR VisitWhileStmt(While stmt);
       TR VisitVarStmt(Var stmt);
     }
   }
@@ -71,6 +72,22 @@ namespace Wagago
     public readonly Expr Condition;
     public readonly Stmt ThenBranch;
     public readonly Stmt ElseBranch;
+  }
+ internal class While: Stmt
+  {
+    internal While(Expr condition, Stmt body)
+    {
+      Condition = condition;
+      Body = body;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitWhileStmt(this);
+    }
+
+    public readonly Expr Condition;
+    public readonly Stmt Body;
   }
  internal class Var: Stmt
   {
