@@ -58,6 +58,22 @@
             return expr.Value;
         }
 
+        object Expr.IVisitor<object>.VisitLogicalExpr(Logical expr)
+        {
+            var left = Evaluate(expr.Left);
+
+            if (expr.Operatr.GetTokenType() == TokenType.OR)
+            {
+                if (IsTruthy(left)) return left;
+            }
+            else
+            {
+                if (!IsTruthy(left)) return left;
+            }
+
+            return Evaluate(expr.Right);
+        }
+
         /// <summary>
         ///     The operand of a unary expression must be evaluated first.
         ///     <para>We cast to Double before applying the operator</para>

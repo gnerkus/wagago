@@ -19,7 +19,9 @@
     ///         printStmt       → "print" expression ";" ;
     ///         expression      → assignment ;
     ///         assignment      → IDENTIFIER "=" assignment
-    ///                         | equality ;
+    ///                         | logic_or ;
+    ///         logic_or        → logic_and ( "or" logic_and )* ;
+    ///         logic_and       → equality ( "and" equality )* ;
     ///         equality        → comparison ( ( "!=" | "==" ) comparison )* ;
     ///         comparison      → term ( ( gt | gte | lt | lte ) term )* ;
     ///         term            → factor ( ( - | + ) factor )* ;
@@ -69,7 +71,7 @@
         {
             // 1. keep evaluating until you reach `primary` which would return an IDENTIFIER
             // cursor moves forward
-            var expr = Equality();
+            var expr = Or();
 
             // 2. return the identifier if there is no assignment via presence of "="
             if (!Match(TokenType.EQUAL)) return expr;
@@ -89,6 +91,33 @@
             return expr;
         }
 
+        private Expr Or()
+        {
+            var expr = And();
+
+            while (Match(TokenType.OR))
+            {
+                var operatr = Previous();
+                var right = And();
+                expr = new Logical(expr, operatr, right);
+            }
+
+            return expr;
+        }
+
+        private Expr And()
+        {
+            var expr = Equality();
+            
+            while (Match(TokenType.AND))
+            {
+                var operatr = Previous();
+                var right = Equality();
+                expr = new Logical(expr, operatr, right);
+            }
+
+            return expr;
+        }
 
         /// <summary>
         ///     Evaluates:
