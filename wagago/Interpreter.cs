@@ -2,7 +2,7 @@
 {
     public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
-        private Env _environment = new ();
+        private Env _environment = new();
 
         object Expr.IVisitor<object>.VisitBinaryExpr(Binary expr)
         {
@@ -43,14 +43,32 @@
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        /// <exception cref="RuntimeError">Thrown when the expressions callee is not a callable</exception>
+        /// <exception cref="RuntimeError">Thrown when there are too few or too many function arguments</exception>
         object Expr.IVisitor<object>.VisitInvocationExpr(Invocation expr)
         {
             var callee = Evaluate(expr.Callee);
 
             var args = expr.Arguments.Select(Evaluate).ToList();
 
-            var function = (IWagagoCallable)callee;
-            return function.Invocation(this, args);
+            if (callee is not IWagagoCallable callable)
+            {
+                throw new RuntimeError(expr.Paren, "Can only call functions and classes");
+            }
+
+            if (args.Count != callable.Arity())
+            {
+                throw new RuntimeError(expr.Paren,
+                    $"Expected {callable.Arity()} arguments but got {args.Count}.");
+            }
+
+            return callable.Invocation(this, args);
         }
 
         /// <summary>
@@ -167,7 +185,7 @@
             {
                 value = Evaluate(stmt.Initializer);
             }
-            
+
             _environment.Define(stmt.Identifier.lexeme, value);
             return null;
         }
@@ -199,7 +217,7 @@
         {
             return expr.Accept(this);
         }
-        
+
         private void ExecuteBlock(List<Stmt> statements, Env blockEnv)
         {
             var previous = _environment;
@@ -218,7 +236,7 @@
                 _environment = previous;
             }
         }
-        
+
         /// <summary>
         /// similar to the Evaluate method for handling expressions
         /// <para>no value is returned as we're not evaluating an expression</para>
@@ -241,7 +259,6 @@
             }
         }
 
-        
 
         private static string Stringify(object value)
         {
