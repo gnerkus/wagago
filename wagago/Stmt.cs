@@ -11,6 +11,7 @@ namespace Wagago
       TR VisitIfStmt(If stmt);
       TR VisitWhileStmt(While stmt);
       TR VisitVarStmt(Var stmt);
+      TR VisitFuncStmt(Func stmt);
     }
   }
  internal class Block: Stmt
@@ -104,5 +105,23 @@ namespace Wagago
 
     public readonly Token Identifier;
     public readonly Expr Initializer;
+  }
+ internal class Func: Stmt
+  {
+    internal Func(Token name, List<Token> funcParams, List<Stmt> body)
+    {
+      Name = name;
+      FuncParams = funcParams;
+      Body = body;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitFuncStmt(this);
+    }
+
+    public readonly Token Name;
+    public readonly List<Token> FuncParams;
+    public readonly List<Stmt> Body;
   }
 }

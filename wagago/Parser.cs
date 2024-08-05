@@ -5,9 +5,12 @@
     ///     <para>Rules are (precedence increases downwards):</para>
     ///     <code>
     ///         program         → declaration* EOF ;
-    ///         declaration     → varDecl
+    ///         declaration     → funDecl
+    ///                         | varDecl
     ///                         | statement ;
     ///         varDecl         → "var" IDENTIFIER ( "=" expression )? ";" ;
+    ///         funDecl         → "fun" function ;
+    ///         function        → IDENTIFIER "(" parameters? ")" block ;
     ///         statement       → exprStmt
     ///                         | forStmt
     ///                         | ifStmt
@@ -35,6 +38,7 @@
     ///         unary           → ( ! | - ) unary | call ;
     ///         call            → primary ( "(" arguments? ")" )* ;
     ///         arguments       → expression ( "," expression )* ;
+    ///         parameters      → IDENTIFIER ( "," IDENTIFIER )* ;
     ///         primary         → "true" | "false" | "nil"
     ///                         | NUMBER | STRING
     ///                         | "(" expression ")"

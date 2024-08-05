@@ -38,8 +38,8 @@
                             "If             : Expr condition, Stmt thenBranch," +
                                             " Stmt elseBranch",
                             "While          : Expr condition, Stmt body",
-                            "Var            : Token identifier, Expr initializer"
-                            
+                            "Var            : Token identifier, Expr initializer",
+                            "Func           : Token name, List<Token> funcParams, List<Stmt> body" 
                         });
                     break;
                 default:

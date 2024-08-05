@@ -1,5 +1,9 @@
 ﻿namespace Wagago
 {
+    /// <summary>
+    ///
+    /// <para>native functions are stored in the global scope (environment)</para>
+    /// </summary>
     public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
         private readonly Env _globals = new();
