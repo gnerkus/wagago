@@ -12,6 +12,11 @@
             return Parenthesize(expr.Operatr.lexeme, expr.Left, expr.Right);
         }
 
+        string Expr.IVisitor<string>.VisitInvocationExpr(Invocation expr)
+        {
+            throw new NotImplementedException();
+        }
+
         string Expr.IVisitor<string>.VisitGroupingExpr(Grouping expr)
         {
             return Parenthesize("group", expr.Expression);

@@ -22,7 +22,7 @@
                         {
                             "Assign         : Token identifier, Expr value",
                             "Binary         : Expr left, Token operatr, Expr right",
-                            "Call           : Expr callee, Token paren, List<Expr> arguments",
+                            "Invocation     : Expr callee, Token paren, List<Expr> arguments",
                             "Grouping       : Expr expression",
                             "Literal        : object value",
                             "Logical        : Expr left, Token operatr, Expr right",

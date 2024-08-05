@@ -43,6 +43,11 @@
             }
         }
 
+        object Expr.IVisitor<object>.VisitInvocationExpr(Invocation expr)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         ///     Recursively evaluate the expression within the group (parentheses)
         /// </summary>

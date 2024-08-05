@@ -229,10 +229,50 @@
         /// <returns></returns>
         private Expr TokenUnary()
         {
-            if (!Match(TokenType.BANG, TokenType.MINUS)) return Primary();
+            if (!Match(TokenType.BANG, TokenType.MINUS)) return Invocation();
             var optr = Previous();
             var right = TokenUnary();
             return new Unary(optr, right);
+        }
+
+        private Expr Invocation()
+        {
+            var expr = Primary();
+
+            while (true)
+            {
+                if (Match(TokenType.LEFT_PAREN))
+                {
+                    expr = FinishInvocation(expr);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return expr;
+        }
+
+        private Expr FinishInvocation(Expr callee)
+        {
+            var args = new List<Expr>();
+            if (!Check(TokenType.RIGHT_PAREN))
+            {
+                // while there's a comma, collate arguments
+                do
+                {
+                    if (args.Count >= 255)
+                    {
+                        Error(Peek(), "Can't have more than 255 arguments.");
+                    }
+                    args.Add(ParseExpression());
+                } while (Match(TokenType.COMMA));
+            }
+
+            var paren = Consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments");
+
+            return new Invocation(callee, paren, args);
         }
 
         /// <summary>
