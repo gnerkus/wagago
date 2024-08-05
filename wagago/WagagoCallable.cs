@@ -11,4 +11,22 @@
         int Arity();
         object Invocation(Interpreter interpreter, List<object> args);
     }
+
+    public class WagagoClock : IWagagoCallable
+    {
+        public int Arity()
+        {
+            return 0;
+        }
+
+        public object Invocation(Interpreter interpreter, List<object> args)
+        {
+            return DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000.0;
+        }
+
+        public override string ToString()
+        {
+            return "<native fn>";
+        }
+    }
 }

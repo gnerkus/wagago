@@ -2,8 +2,15 @@
 {
     public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
-        private Env _environment = new();
+        private readonly Env _globals = new();
+        private Env _environment;
 
+        public Interpreter()
+        {
+            _environment = _globals;
+            _globals.Define("clock", new WagagoClock());
+        }
+        
         object Expr.IVisitor<object>.VisitBinaryExpr(Binary expr)
         {
             var left = Evaluate(expr.Left);
