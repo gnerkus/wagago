@@ -6,13 +6,13 @@
     /// </summary>
     public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
-        private readonly Env _globals = new();
+        internal readonly Env Globals = new();
         private Env _environment;
 
         public Interpreter()
         {
-            _environment = _globals;
-            _globals.Define("clock", new WagagoClock());
+            _environment = Globals;
+            Globals.Define("clock", new WagagoClock());
         }
         
         object Expr.IVisitor<object>.VisitBinaryExpr(Binary expr)
@@ -201,6 +201,13 @@
             return null;
         }
 
+        object Stmt.IVisitor<object>.VisitFuncStmt(Func stmt)
+        {
+            var func = new WagagoFunction(stmt);
+            _environment.Define(stmt.Name.lexeme, func);
+            return null;
+        }
+
         object Expr.IVisitor<object>.VisitAssignExpr(Assign expr)
         {
             var value = Evaluate(expr.Value);
@@ -229,7 +236,7 @@
             return expr.Accept(this);
         }
 
-        private void ExecuteBlock(List<Stmt> statements, Env blockEnv)
+        internal void ExecuteBlock(List<Stmt> statements, Env blockEnv)
         {
             var previous = _environment;
 
