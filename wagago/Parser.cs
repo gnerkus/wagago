@@ -437,6 +437,7 @@
         {
             try
             {
+                if (Match(TokenType.FUN)) return FunctionDeclaration("function");
                 return Match(TokenType.VAR) ? VarDeclaration() : Statement();
             }
             catch (ParserError error)
@@ -444,6 +445,34 @@
                 Synchronize();
                 return null;
             }
+        }
+
+        private Stmt FunctionDeclaration(string kind)
+        {
+            // 1. function name
+            var name = Consume(TokenType.IDENTIFIER, $"Expect {kind} name.");
+            // 2. left parentheses
+            Consume(TokenType.LEFT_PAREN, $"Expect '(' after {kind} name.");
+            var parameters = new List<Token>();
+            // 3. if the function declaration has parameters
+            if (!Check(TokenType.RIGHT_PAREN))
+            {
+                do
+                {
+                    if (parameters.Count >= 255)
+                    {
+                        Error(Peek(), "Can't have more than 255 parameters");
+                    }
+                    
+                    parameters.Add(Consume(TokenType.IDENTIFIER, "Expect parameter name"));
+                } while (Match(TokenType.COMMA));
+            }
+            // 4. right parentheses
+            Consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.");
+            // 5. function body left brace
+            Consume(TokenType.LEFT_BRACE, $"Expect '{{' before {kind} body.");
+            var body = ParserBlock();
+            return new Func(name, parameters, body);
         }
 
         /// <summary>
