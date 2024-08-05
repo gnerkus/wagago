@@ -45,7 +45,12 @@
 
         object Expr.IVisitor<object>.VisitInvocationExpr(Invocation expr)
         {
-            throw new NotImplementedException();
+            var callee = Evaluate(expr.Callee);
+
+            var args = expr.Arguments.Select(Evaluate).ToList();
+
+            var function = (IWagagoCallable)callee;
+            return function.Invocation(this, args);
         }
 
         /// <summary>
