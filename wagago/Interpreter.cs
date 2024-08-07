@@ -203,7 +203,10 @@
 
         object Stmt.IVisitor<object>.VisitReturnStmt(Return stmt)
         {
-            throw new NotImplementedException();
+            object value = null;
+            if (stmt.Value != null) value = Evaluate(stmt.Value);
+
+            throw new ReturnException(value);
         }
 
         object Stmt.IVisitor<object>.VisitFuncStmt(Func stmt)

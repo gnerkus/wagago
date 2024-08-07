@@ -61,8 +61,15 @@
                 // store each argument in the environment under the associated param name
                 env.Define(_declaration.FuncParams[i].lexeme, args[i]);
             }
-            
-            interpreter.ExecuteBlock(_declaration.Body, env);
+
+            try
+            {
+                interpreter.ExecuteBlock(_declaration.Body, env);
+            }
+            catch (ReturnException returnValue)
+            {
+                return returnValue.Value;
+            }
             return null;
         }
 
