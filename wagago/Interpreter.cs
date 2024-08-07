@@ -201,6 +201,11 @@
             return null;
         }
 
+        object Stmt.IVisitor<object>.VisitReturnStmt(Return stmt)
+        {
+            throw new NotImplementedException();
+        }
+
         object Stmt.IVisitor<object>.VisitFuncStmt(Func stmt)
         {
             var func = new WagagoFunction(stmt);

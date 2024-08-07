@@ -39,6 +39,7 @@
                                             " Stmt elseBranch",
                             "While          : Expr condition, Stmt body",
                             "Var            : Token identifier, Expr initializer",
+                            "Return         : Token keyword, Expr value",
                             "Func           : Token name, List<Token> funcParams, List<Stmt> body" 
                         });
                     break;

@@ -15,6 +15,7 @@
     ///                         | forStmt
     ///                         | ifStmt
     ///                         | printStmt
+    ///                         | returnStmt
     ///                         | whileStmt
     ///                         | block ;
     ///         block           → "{" declaration* "}" ;
@@ -25,6 +26,7 @@
     ///                         expression? ";"
     ///                         expression? ")" statement ;
     ///         exprStmt        → expression ";" ;
+    ///         returnStmt      → "return" expression? ";"
     ///         printStmt       → "print" expression ";" ;
     ///         expression      → assignment ;
     ///         assignment      → IDENTIFIER "=" assignment
@@ -512,13 +514,11 @@
             if (Match(TokenType.FOR)) return ForStatement();
             if (Match(TokenType.IF)) return IfStatement();
             if (Match(TokenType.PRINT)) return PrintStatement();
+            if (Match(TokenType.RETURN)) return ReturnStatment();
             if (Match(TokenType.WHILE)) return WhileStatement();
             
-            if (Match(TokenType.LEFT_BRACE)) return new Block(ParserBlock());
-            return ExpressionStatement();
+            return Match(TokenType.LEFT_BRACE) ? new Block(ParserBlock()) : ExpressionStatement();
         }
-
-        
 
         private List<Stmt> ParserBlock()
         {
@@ -625,6 +625,20 @@
             }
             
             return body;
+        }
+        
+        private Stmt ReturnStatment()
+        {
+            // keep the 'return' keyword so the location can be used for error reporting
+            var keyword = Previous();
+            Expr value = null;
+            if (!Check(TokenType.SEMICOLON))
+            {
+                value = ParseExpression();
+            }
+
+            Consume(TokenType.SEMICOLON, "Expect ';' after return value.");
+            return new Return(keyword, value);
         }
 
         private class ParserError : SystemException
