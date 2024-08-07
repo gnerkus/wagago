@@ -41,10 +41,12 @@
     public class WagagoFunction : IWagagoCallable
     {
         private readonly Func _declaration;
+        private readonly Env _closure; 
 
-        internal WagagoFunction(Func declaration)
+        internal WagagoFunction(Func declaration, Env closure)
         {
             _declaration = declaration;
+            _closure = closure;
         }
         public int Arity()
         {
@@ -55,7 +57,8 @@
         {
             // the function call gets its own environment (execution context), bound to the global as a child environment
             // this is to enable recursion
-            var env = new Env(interpreter.Globals);
+            // TODO: bind to a parent env that is not global to allow for closures
+            var env = new Env(_closure);
             for (var i = 0; i < _declaration.FuncParams.Count; i++)
             {
                 // store each argument in the environment under the associated param name

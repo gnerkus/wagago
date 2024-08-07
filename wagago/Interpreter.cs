@@ -211,7 +211,7 @@
 
         object Stmt.IVisitor<object>.VisitFuncStmt(Func stmt)
         {
-            var func = new WagagoFunction(stmt);
+            var func = new WagagoFunction(stmt, _environment);
             _environment.Define(stmt.Name.lexeme, func);
             return null;
         }
