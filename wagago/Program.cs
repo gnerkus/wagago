@@ -85,9 +85,10 @@
 
             var resolver = new Resolver(Interpreter);
             resolver.Resolve(statements);
+            
+            if (_hadError) return;
 
             Interpreter.Interpret(statements);
-            // Console.WriteLine(new AstPrinter().Print(expression));
         }
 
         public static void error(int line, string message)

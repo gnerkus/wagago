@@ -4,6 +4,13 @@
     {
         private readonly Interpreter _interpreter;
         private readonly Stack<Dictionary<string, bool>> _scopes = new ();
+        private FunctionType _currentFunction = FunctionType.NONE;
+        
+        private enum FunctionType
+        {
+            NONE,
+            FUNCTION
+        }
 
         public Resolver(Interpreter interpreter)
         {
@@ -135,6 +142,11 @@
         
         object Stmt.IVisitor<object>.VisitReturnStmt(Return stmt)
         {
+            if (_currentFunction == FunctionType.NONE)
+            {
+                Wagago.error(stmt.Keyword, "Can't return from top-level code.");
+            }
+            
             if (stmt.Value != null)
             {
                 Resolve(stmt.Value);
@@ -148,7 +160,8 @@
             Declare(stmt.Name);
             Define(stmt.Name);
             
-            ResolveFunction(stmt);
+            ResolveFunction(stmt, FunctionType.FUNCTION);
+            
             return null;
         }
 
@@ -193,6 +206,12 @@
             if (_scopes.Count <= 0) return;
 
             var scope = _scopes.Peek();
+
+            if (scope.ContainsKey(stmtIdentifier.lexeme))
+            {
+                Wagago.error(stmtIdentifier, "Already a variable with this name in this scope");
+            }
+            
             scope[stmtIdentifier.lexeme] = false;
         }
         
@@ -224,8 +243,10 @@
             }
         }
         
-        private void ResolveFunction(Func func)
+        private void ResolveFunction(Func func, FunctionType functionType)
         {
+            var enclosingFunction = _currentFunction;
+            _currentFunction = functionType;
             BeginScope();
             foreach (var param in func.FuncParams)
             {
@@ -234,6 +255,7 @@
             }
             Resolve(func.Body);
             EndScope();
+            _currentFunction = enclosingFunction;
         }
     }
 }
