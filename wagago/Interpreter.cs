@@ -8,11 +8,17 @@
     {
         internal readonly Env Globals = new();
         private Env _environment;
+        private readonly Dictionary<Expr, int> _locals = new();
 
         public Interpreter()
         {
             _environment = Globals;
             Globals.Define("clock", new WagagoClock());
+        }
+
+        internal void Resolve(Expr expr, int depth)
+        {
+            _locals[expr] = depth;
         }
         
         object Expr.IVisitor<object>.VisitBinaryExpr(Binary expr)
