@@ -57,7 +57,6 @@
         {
             // the function call gets its own environment (execution context), bound to the global as a child environment
             // this is to enable recursion
-            // TODO: bind to a parent env that is not global to allow for closures
             var env = new Env(_closure);
             for (var i = 0; i < _declaration.FuncParams.Count; i++)
             {
