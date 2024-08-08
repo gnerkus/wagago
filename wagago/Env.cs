@@ -56,5 +56,27 @@
                 throw new RuntimeError(name, $"Undefined variable '{name.lexeme}'.");
             _enclosing.Assign(name, value);
         }
+
+        public object GetAt(int distance, string exprNameLexeme)
+        {
+            return Ancestor(distance)._values[exprNameLexeme];
+        }
+
+        // TODO: check if we can use the same ancestor if no enclosing
+        private Env Ancestor(int distance)
+        {
+            var ancestor = this;
+            for (var i = 0; i < distance; i++)
+            {
+                ancestor = ancestor._enclosing ?? ancestor;
+            }
+
+            return ancestor;
+        }
+
+        public void AssignAt(int distance, Token exprIdentifier, object value)
+        {
+            Ancestor(distance)._values[exprIdentifier.lexeme] = value;
+        }
     }
 }

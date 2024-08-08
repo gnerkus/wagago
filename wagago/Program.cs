@@ -83,6 +83,9 @@
 
             if (_hadError) return;
 
+            var resolver = new Resolver(Interpreter);
+            resolver.Resolve(statements);
+
             Interpreter.Interpret(statements);
             // Console.WriteLine(new AstPrinter().Print(expression));
         }

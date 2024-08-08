@@ -142,7 +142,7 @@
 
         object Expr.IVisitor<object>.VisitVariableExpr(Variable expr)
         {
-            return _environment.Get(expr.Name);
+            return LookUpVariable(expr.Name, expr);
         }
 
         object Stmt.IVisitor<object>.VisitBlockStmt(Block stmt)
@@ -225,7 +225,17 @@
         object Expr.IVisitor<object>.VisitAssignExpr(Assign expr)
         {
             var value = Evaluate(expr.Value);
-            _environment.Assign(expr.Identifier, value);
+
+            var hasDistance = _locals.TryGetValue(expr, out var distance);
+            if (hasDistance)
+            {
+                _environment.AssignAt(distance, expr.Identifier, value);
+            }
+            else
+            {
+                Globals.Assign(expr.Identifier, value);
+            }
+
             return value;
         }
 
@@ -335,6 +345,12 @@
             // is compatible with a given type.
             if (right is bool b) return b;
             return true;
+        }
+        
+        private object LookUpVariable(Token exprName, Expr expr)
+        {
+            var hasDistance = _locals.TryGetValue(expr, out var distance);
+            return hasDistance ? _environment.GetAt(distance, exprName.lexeme) : Globals.Get(exprName);
         }
     }
 }

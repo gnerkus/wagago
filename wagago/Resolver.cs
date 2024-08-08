@@ -152,7 +152,7 @@
             return null;
         }
 
-        private void Resolve(List<Stmt> stmtStatements)
+        internal void Resolve(List<Stmt> stmtStatements)
         {
             foreach (var stmt in stmtStatements)
             {
@@ -160,12 +160,12 @@
             }
         }
 
-        private void Resolve(Stmt stmt)
+        internal void Resolve(Stmt stmt)
         {
             stmt.Accept(this);
         }
         
-        private void Resolve(Expr expr)
+        internal void Resolve(Expr expr)
         {
             expr.Accept(this);
         }
