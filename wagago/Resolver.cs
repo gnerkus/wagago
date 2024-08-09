@@ -68,9 +68,14 @@
 
         object Expr.IVisitor<object>.VisitVariableExpr(Variable expr)
         {
-            if (_scopes.Count > 0 && _scopes.Peek()[expr.Name.lexeme] == false)
+
+            if (_scopes.Count > 0)
             {
-                Wagago.error(expr.Name, "Can't read local variable in its own initializer");
+                var hasInScope = _scopes.Peek().TryGetValue(expr.Name.lexeme, out var scopedVariable);
+                if (hasInScope && scopedVariable == false)
+                {
+                    Wagago.error(expr.Name, "Can't read local variable in its own initializer");
+                }
             }
 
             ResolveLocal(expr, expr.Name);
@@ -238,7 +243,7 @@
             for (var i = _scopes.Count - 1; i >= 0; i--)
             {
                 if (!_scopes.ToArray()[i].ContainsKey(exprName.lexeme)) continue;
-                _interpreter.Resolve(expr, _scopes.Count - 1 - i);
+                _interpreter.Resolve(expr, _scopes.Count - 1);
                 return;
             }
         }
