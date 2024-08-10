@@ -33,6 +33,7 @@
                         new List<string>
                         {
                             "Block          : List<Stmt> statements",
+                            "Class          : Token name, List<Func> methods",
                             "Expression     : Expr expressn",
                             "Print          : Expr expression",
                             "If             : Expr condition, Stmt thenBranch," +

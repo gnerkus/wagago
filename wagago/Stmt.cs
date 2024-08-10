@@ -6,6 +6,7 @@ namespace Wagago
 
    internal interface IVisitor<out TR> {
       TR VisitBlockStmt(Block stmt);
+      TR VisitClassStmt(Class stmt);
       TR VisitExpressionStmt(Expression stmt);
       TR VisitPrintStmt(Print stmt);
       TR VisitIfStmt(If stmt);
@@ -28,6 +29,22 @@ namespace Wagago
     }
 
     public readonly List<Stmt> Statements;
+  }
+ internal class Class: Stmt
+  {
+    internal Class(Token name, List<Func> methods)
+    {
+      Name = name;
+      Methods = methods;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitClassStmt(this);
+    }
+
+    public readonly Token Name;
+    public readonly List<Func> Methods;
   }
  internal class Expression: Stmt
   {

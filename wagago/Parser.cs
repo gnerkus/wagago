@@ -5,10 +5,12 @@
     ///     <para>Rules are (precedence increases downwards):</para>
     ///     <code>
     ///         program         → declaration* EOF ;
-    ///         declaration     → funDecl
+    ///         declaration     → classDecl
+    ///                         | funDecl
     ///                         | varDecl
     ///                         | statement ;
     ///         varDecl         → "var" IDENTIFIER ( "=" expression )? ";" ;
+    ///         classDecl       → "class" IDENTIFIER "{" function* "}" ;
     ///         funDecl         → "fun" function ;
     ///         function        → IDENTIFIER "(" parameters? ")" block ;
     ///         statement       → exprStmt
@@ -439,6 +441,7 @@
         {
             try
             {
+                if (Match(TokenType.CLASS)) return ClassDeclaration();
                 if (Match(TokenType.FUN)) return FunctionDeclaration("function");
                 return Match(TokenType.VAR) ? VarDeclaration() : Statement();
             }
@@ -449,6 +452,21 @@
             }
         }
 
+        private Stmt ClassDeclaration()
+        {
+            var name = Consume(TokenType.IDENTIFIER, "Expect class name.");
+            Consume(TokenType.LEFT_BRACE, "Expect '{' before class body");
+
+            var methods = new List<Func>();
+            while (!Check(TokenType.RIGHT_BRACE) && !IsAtEnd())
+            {
+                methods.Add((Func)FunctionDeclaration("method"));
+            }
+
+            Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body");
+
+            return new Class(name, methods);
+        }
         private Stmt FunctionDeclaration(string kind)
         {
             // 1. function name
