@@ -1,11 +1,17 @@
 ﻿namespace Wagago
 {
+    /// <summary>
+    /// runs before Interpreter
+    /// <para>
+    ///     - define scopes for blocks and functions
+    /// </para>
+    /// </summary>
     public class Resolver: Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
         private readonly Interpreter _interpreter;
         private readonly Stack<Dictionary<string, bool>> _scopes = new ();
         private FunctionType _currentFunction = FunctionType.NONE;
-        
+
         private enum FunctionType
         {
             NONE,
@@ -103,9 +109,7 @@
             EndScope();
             return null;
         }
-
         
-
         object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
         {
             Resolve(stmt.Expressn);
@@ -169,6 +173,13 @@
             
             return null;
         }
+        
+        object Stmt.IVisitor<object>.VisitClassStmt(Class stmt)
+        {
+            Declare(stmt.Name);
+            Define(stmt.Name);
+            return null;
+        }
 
         internal void Resolve(List<Stmt> stmtStatements)
         {
@@ -178,12 +189,12 @@
             }
         }
 
-        internal void Resolve(Stmt stmt)
+        private void Resolve(Stmt stmt)
         {
             stmt.Accept(this);
         }
-        
-        internal void Resolve(Expr expr)
+
+        private void Resolve(Expr expr)
         {
             expr.Accept(this);
         }
@@ -248,6 +259,11 @@
             }
         }
         
+        /// <summary>
+        /// define scopes for the function
+        /// </summary>
+        /// <param name="func"></param>
+        /// <param name="functionType"></param>
         private void ResolveFunction(Func func, FunctionType functionType)
         {
             var enclosingFunction = _currentFunction;

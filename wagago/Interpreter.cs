@@ -151,6 +151,14 @@
             return null;
         }
 
+        object Stmt.IVisitor<object>.VisitClassStmt(Class stmt)
+        {
+            _environment.Define(stmt.Name.lexeme, null);
+            WagagoClass klass = new WagagoClass(stmt.Name.lexeme);
+            _environment.Assign(stmt.Name, klass);
+            return null;
+        }
+
         object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
         {
             Evaluate(stmt.Expressn);
