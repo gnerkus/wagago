@@ -1,17 +1,28 @@
 ﻿namespace Wagago
 {
-    public class WagagoClass
+    public class WagagoClass: IWagagoCallable
     {
-        readonly string _name;
+        public readonly string Name;
 
         public WagagoClass(string name)
         {
-            _name = name;
+            Name = name;
         }
 
         public override string ToString()
         {
-            return _name;
+            return Name;
+        }
+
+        public int Arity()
+        {
+            return 0;
+        }
+
+        public object Invocation(Interpreter interpreter, List<object> args)
+        {
+            var instance = new WagagoInstance(this);
+            return instance;
         }
     }
 }

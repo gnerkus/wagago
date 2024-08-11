@@ -22,3 +22,12 @@ var a = "global";
   var a = "block";
   showA();
 }
+
+class Brot {
+    serveOn() {
+        return "Brot";
+    }
+}
+
+var breakfast = Brot();
+print breakfast;
