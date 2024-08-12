@@ -23,6 +23,7 @@
                             "Assign         : Token identifier, Expr value",
                             "Binary         : Expr left, Token operatr, Expr right",
                             "Invocation     : Expr callee, Token paren, List<Expr> arguments",
+                            "PropGet         : Expr owner, Token name",
                             "Grouping       : Expr expression",
                             "Literal        : object value",
                             "Logical        : Expr left, Token operatr, Expr right",

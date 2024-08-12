@@ -17,6 +17,11 @@
             throw new NotImplementedException();
         }
 
+        string Expr.IVisitor<string>.VisitPropGetExpr(PropGet expr)
+        {
+            throw new NotImplementedException();
+        }
+
         string Expr.IVisitor<string>.VisitGroupingExpr(Grouping expr)
         {
             return Parenthesize("group", expr.Expression);

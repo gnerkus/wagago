@@ -88,6 +88,17 @@
             return callable.Invocation(this, args);
         }
 
+        object Expr.IVisitor<object>.VisitPropGetExpr(PropGet expr)
+        {
+            var owner = Evaluate(expr.Owner);
+            if (owner is WagagoInstance instance)
+            {
+                return instance.Get(expr.Name);
+            }
+
+            throw new RuntimeError(expr.Name, "Only instances have properties");
+        }
+
         /// <summary>
         ///     Recursively evaluate the expression within the group (parentheses)
         /// </summary>

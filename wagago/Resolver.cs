@@ -48,6 +48,12 @@
             return null;
         }
 
+        object Expr.IVisitor<object>.VisitPropGetExpr(PropGet expr)
+        {
+            Resolve(expr.Owner);
+            return null;
+        }
+
         object Expr.IVisitor<object>.VisitGroupingExpr(Grouping expr)
         {
             Resolve(expr.Expression);

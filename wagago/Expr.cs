@@ -8,6 +8,7 @@ namespace Wagago
       TR VisitAssignExpr(Assign expr);
       TR VisitBinaryExpr(Binary expr);
       TR VisitInvocationExpr(Invocation expr);
+      TR VisitPropGetExpr(PropGet expr);
       TR VisitGroupingExpr(Grouping expr);
       TR VisitLiteralExpr(Literal expr);
       TR VisitLogicalExpr(Logical expr);
@@ -66,6 +67,22 @@ namespace Wagago
     public readonly Expr Callee;
     public readonly Token Paren;
     public readonly List<Expr> Arguments;
+  }
+ internal class PropGet: Expr
+  {
+    internal PropGet(Expr owner, Token name)
+    {
+      Owner = owner;
+      Name = name;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitPropGetExpr(this);
+    }
+
+    public readonly Expr Owner;
+    public readonly Token Name;
   }
  internal class Grouping: Expr
   {

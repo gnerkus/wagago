@@ -40,7 +40,7 @@
     ///         term            → factor ( ( - | + ) factor )* ;
     ///         factor          → unary ( ( / | * ) unary )* ;
     ///         unary           → ( ! | - ) unary | call ;
-    ///         call            → primary ( "(" arguments? ")" )* ;
+    ///         call            → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
     ///         arguments       → expression ( "," expression )* ;
     ///         parameters      → IDENTIFIER ( "," IDENTIFIER )* ;
     ///         primary         → "true" | "false" | "nil"
@@ -252,6 +252,11 @@
                 if (Match(TokenType.LEFT_PAREN))
                 {
                     expr = FinishInvocation(expr);
+                } else if (Match(TokenType.DOT))
+
+                {
+                    var name = Consume(TokenType.IDENTIFIER, "Expect property name after '.'.");
+                    expr = new PropGet(expr, name);
                 }
                 else
                 {
