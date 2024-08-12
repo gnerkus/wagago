@@ -20,6 +20,11 @@
             throw new RuntimeError(name, $"Undefined property '{name.lexeme}'.");
         }
 
+        public void Set(Token name, object value)
+        {
+            _fields[name.lexeme] = value;
+        }
+
         public override string ToString()
         {
             return _klass.Name + " instance";

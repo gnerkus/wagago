@@ -54,6 +54,13 @@
             return null;
         }
 
+        object Expr.IVisitor<object>.VisitPropSetExpr(PropSet expr)
+        {
+            Resolve(expr.Value);
+            Resolve(expr.Owner);
+            return null;
+        }
+
         object Expr.IVisitor<object>.VisitGroupingExpr(Grouping expr)
         {
             Resolve(expr.Expression);

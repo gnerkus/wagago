@@ -99,6 +99,20 @@
             throw new RuntimeError(expr.Name, "Only instances have properties");
         }
 
+        object Expr.IVisitor<object>.VisitPropSetExpr(PropSet expr)
+        {
+            var owner = Evaluate(expr.Owner);
+
+            if (owner is not WagagoInstance)
+            {
+                throw new RuntimeError(expr.Name, "Only instances have fields");
+            }
+
+            var value = Evaluate(expr.Value);
+            ((WagagoInstance)owner).Set(expr.Name, value);
+            return value;
+        }
+
         /// <summary>
         ///     Recursively evaluate the expression within the group (parentheses)
         /// </summary>

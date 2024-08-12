@@ -31,7 +31,7 @@
     ///         returnStmt      → "return" expression? ";"
     ///         printStmt       → "print" expression ";" ;
     ///         expression      → assignment ;
-    ///         assignment      → IDENTIFIER "=" assignment
+    ///         assignment      →  ( call "." )? IDENTIFIER "=" assignment
     ///                         | logic_or ;
     ///         logic_or        → logic_and ( "or" logic_and )* ;
     ///         logic_and       → equality ( "and" equality )* ;
@@ -95,16 +95,20 @@
             // 3. evaluate the r-value (right hand side)
             var value = Assignment();
 
-            // 4. check if the l-value is a variable i.e a 'memory' location
-            if (expr is Variable variable)
+            switch (expr)
             {
-                var name = variable.Name;
-                return new Assign(name, value);
+                // 4. check if the l-value is a variable i.e a 'memory' location
+                case Variable variable:
+                {
+                    var name = variable.Name;
+                    return new Assign(name, value);
+                }
+                case PropGet prop:
+                    return new PropSet(prop.Owner, prop.Name, value);
+                default:
+                    Error(equals, "Invalid assignment target.");
+                    return expr;
             }
-
-            Error(equals, "Invalid assignment target.");
-
-            return expr;
         }
 
         private Expr Or()
