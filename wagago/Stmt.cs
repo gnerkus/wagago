@@ -32,9 +32,10 @@ namespace Wagago
   }
  internal class Class: Stmt
   {
-    internal Class(Token name, List<Func> methods)
+    internal Class(Token name, Variable superClass, List<Func> methods)
     {
       Name = name;
+      SuperClass = superClass;
       Methods = methods;
     }
 
@@ -44,6 +45,7 @@ namespace Wagago
     }
 
     public readonly Token Name;
+    public readonly Variable SuperClass;
     public readonly List<Func> Methods;
   }
  internal class Expression: Stmt

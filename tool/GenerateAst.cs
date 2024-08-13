@@ -30,13 +30,13 @@
                             "Logical        : Expr left, Token operatr, Expr right",
                             "This           : Token keyword",
                             "Unary          : Token operatr, Expr right",
-                            "Variable       : Token name" // fetch the associated value, using name
+                            "Variable       : Token name"
                         });
                     DefineAst(outputDir, "Stmt",
                         new List<string>
                         {
                             "Block          : List<Stmt> statements",
-                            "Class          : Token name, List<Func> methods",
+                            "Class          : Token name, Variable superClass, List<Func> methods",
                             "Expression     : Expr expressn",
                             "Print          : Expr expression",
                             "If             : Expr condition, Stmt thenBranch," +
