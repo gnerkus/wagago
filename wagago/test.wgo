@@ -25,9 +25,8 @@ var a = "global";
 
 class Brot {
     serveOn() {
-        return "Brot";
+        print "zum Fruhstuck";
     }
 }
 
-var breakfast = Brot();
-print breakfast;
+Brot().serveOn();

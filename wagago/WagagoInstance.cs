@@ -17,6 +17,9 @@
                 return _fields[name.lexeme];
             }
 
+            var method = _klass.FindMethod(name.lexeme);
+            if (method != null) return method;
+
             throw new RuntimeError(name, $"Undefined property '{name.lexeme}'.");
         }
 
