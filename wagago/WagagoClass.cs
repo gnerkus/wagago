@@ -36,7 +36,7 @@
 
         public WagagoFunction FindMethod(string name)
         {
-            return _methods.TryGetValue(name, out var method) ? method : null;
+            return _methods.ContainsKey(name) ? _methods[name] : SuperClass?.FindMethod(name);
         }
     }
 }
