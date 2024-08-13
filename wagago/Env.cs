@@ -2,17 +2,17 @@
 {
     public class Env
     {
-        private readonly Env? _enclosing;
+        public readonly Env? Enclosing;
         private readonly Dictionary<string, object> _values = new ();
 
         public Env()
         {
-            _enclosing = null;
+            Enclosing = null;
         }
 
         public Env(Env? enclosing)
         {
-            _enclosing = enclosing;
+            Enclosing = enclosing;
         }
         
         public void Define(string name, object value)
@@ -36,9 +36,9 @@
                 return _values[name.lexeme];
             }
 
-            if (_enclosing != null)
+            if (Enclosing != null)
             {
-                return _enclosing.Get(name);
+                return Enclosing.Get(name);
             }
 
             throw new RuntimeError(name, $"Undefined variable '{name.lexeme}'.");
@@ -52,9 +52,9 @@
                 return;
             }
 
-            if (_enclosing == null)
+            if (Enclosing == null)
                 throw new RuntimeError(name, $"Undefined variable '{name.lexeme}'.");
-            _enclosing.Assign(name, value);
+            Enclosing.Assign(name, value);
         }
 
         public object GetAt(int distance, string exprNameLexeme)
@@ -68,7 +68,7 @@
             var ancestor = this;
             for (var i = 0; i < distance; i++)
             {
-                ancestor = ancestor._enclosing ?? ancestor;
+                ancestor = ancestor.Enclosing ?? ancestor;
             }
 
             return ancestor;

@@ -10,6 +10,7 @@ namespace Wagago
       TR VisitInvocationExpr(Invocation expr);
       TR VisitPropGetExpr(PropGet expr);
       TR VisitPropSetExpr(PropSet expr);
+      TR VisitSuperExpr(Super expr);
       TR VisitGroupingExpr(Grouping expr);
       TR VisitLiteralExpr(Literal expr);
       TR VisitLogicalExpr(Logical expr);
@@ -103,6 +104,22 @@ namespace Wagago
     public readonly Expr Owner;
     public readonly Token Name;
     public readonly Expr Value;
+  }
+ internal class Super: Expr
+  {
+    internal Super(Token keyword, Token method)
+    {
+      Keyword = keyword;
+      Method = method;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitSuperExpr(this);
+    }
+
+    public readonly Token Keyword;
+    public readonly Token Method;
   }
  internal class Grouping: Expr
   {

@@ -25,6 +25,7 @@
                             "Invocation     : Expr callee, Token paren, List<Expr> arguments",
                             "PropGet        : Expr owner, Token name",
                             "PropSet        : Expr owner, Token name, Expr value",
+                            "Super          : Token keyword, Token method",
                             "Grouping       : Expr expression",
                             "Literal        : object value",
                             "Logical        : Expr left, Token operatr, Expr right",

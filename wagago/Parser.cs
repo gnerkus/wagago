@@ -44,10 +44,9 @@
     ///         call            → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
     ///         arguments       → expression ( "," expression )* ;
     ///         parameters      → IDENTIFIER ( "," IDENTIFIER )* ;
-    ///         primary         → "true" | "false" | "nil"
-    ///                         | NUMBER | STRING
-    ///                         | "(" expression ")"
-    ///                         | IDENTIFIER ;
+    ///         primary         → "true" | "false" | "nil" | "this"
+    ///                         | NUMBER | STRING | IDENTIFIER | "(" expression ")"
+    ///                         | "super" "." IDENTIFIER ;
     ///     </code>
     ///     <example>
     ///         For the expression "6 / 3 - 1":
@@ -310,6 +309,14 @@
             if (Match(TokenType.NUMBER, TokenType.STRING))
                 return new Literal(Previous().GetLiteral());
 
+            if (Match(TokenType.SUPER))
+            {
+                var keyword = Previous();
+                Consume(TokenType.DOT, "Expect '.' after 'super'");
+                var method = Consume(TokenType.IDENTIFIER, "Expect superclass method name.");
+                return new Super(keyword, method);
+            }
+            
             if (Match(TokenType.THIS)) return new This(Previous()); 
             
             if (Match(TokenType.IDENTIFIER))

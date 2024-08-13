@@ -114,6 +114,38 @@
         }
 
         /// <summary>
+        /// Evaluates an expression containing the keyword 'super' and returns the associated method
+        /// <para>
+        ///     The method is bound to the `this` context of the parent of the class where the `super`
+        ///     expression was declared.
+        /// </para>
+        /// <para>
+        ///     'super' only applies to methods and not fields. 
+        /// </para>
+        /// <para>
+        ///     1. 
+        /// </para>
+        /// </summary>
+        /// <param name="expr"></param>
+        /// <returns></returns>
+        object Expr.IVisitor<object>.VisitSuperExpr(Super expr)
+        {
+            // the distance of the scope in which `super` was declared from the current scope
+            var distance = _locals[expr];
+            var superClass = (WagagoClass)_environment.GetAt(distance, "super");
+            // the superclass to which `super` refers
+            var obj = (WagagoInstance)_environment.GetAt(distance - 1, "this");
+            var method = superClass.FindMethod(expr.Method.lexeme);
+
+            if (method == null)
+            {
+                throw new RuntimeError(expr.Method, $"Undefined property '{expr.Method.lexeme}'.");
+            }
+            
+            return method.Bind(obj);
+        }
+
+        /// <summary>
         ///     Recursively evaluate the expression within the group (parentheses)
         /// </summary>
         /// <param name="expr"></param>
@@ -201,6 +233,13 @@
             
             _environment.Define(stmt.Name.lexeme, null);
 
+            // add a ref to the super class to the environment
+            if (stmt.SuperClass != null)
+            {
+                _environment = new Env(_environment);
+                _environment.Define("super", superClass);
+            }
+            
             var methods = new Dictionary<string, WagagoFunction>();
             foreach (var method in stmt.Methods)
             {
@@ -209,7 +248,14 @@
             }
             
             var klass = new WagagoClass(stmt.Name.lexeme, (WagagoClass)superClass, methods);
-            _environment.Assign(stmt.Name, klass);
+
+            if (superClass != null)
+            {
+                _environment = _environment.Enclosing;
+            }
+
+            _environment?.Assign(stmt.Name, klass);
+
             return null;
         }
 

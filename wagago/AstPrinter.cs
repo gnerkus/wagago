@@ -25,6 +25,11 @@
             throw new NotImplementedException();
         }
 
+        string Expr.IVisitor<string>.VisitSuperExpr(Super expr)
+        {
+            throw new NotImplementedException();
+        }
+
         string Expr.IVisitor<string>.VisitGroupingExpr(Grouping expr)
         {
             return Parenthesize("group", expr.Expression);

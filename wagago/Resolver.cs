@@ -24,7 +24,8 @@
         private enum ClassType
         {
             NONE,
-            CLASS
+            CLASS,
+            SUBCLASS
         }
 
         public Resolver(Interpreter interpreter)
@@ -67,6 +68,20 @@
         {
             Resolve(expr.Value);
             Resolve(expr.Owner);
+            return null;
+        }
+
+        object Expr.IVisitor<object>.VisitSuperExpr(Super expr)
+        {
+            if (_currentClass == ClassType.NONE)
+            {
+                Wagago.error(expr.Keyword, "Can't use 'super' outside of a class.");
+            } else if (_currentClass != ClassType.SUBCLASS)
+            {
+                Wagago.error(expr.Keyword, "Can't use 'super' in a class with no superclass");
+            }
+
+            ResolveLocal(expr, expr.Keyword);
             return null;
         }
 
@@ -231,7 +246,15 @@
 
             if (stmt.SuperClass != null)
             {
+                _currentClass = ClassType.SUBCLASS;
                 Resolve(stmt.SuperClass);
+            }
+
+            // create an environment for the class as a super class
+            if (stmt.SuperClass != null)
+            {
+                BeginScope();
+                _scopes.Peek()["super"] = true;
             }
             
             BeginScope();
@@ -248,6 +271,9 @@
             }
             
             EndScope();
+            
+            // remove the environment for the superclass
+            if (stmt.SuperClass != null) EndScope();
 
             _currentClass = enclosingClass;
             return null;
