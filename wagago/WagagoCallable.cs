@@ -75,6 +75,13 @@
             return null;
         }
 
+        public WagagoFunction Bind(WagagoInstance instance)
+        {
+            var env = new Env(_closure);
+            env.Define("this", instance);
+            return new WagagoFunction(_declaration, env);
+        }
+
         public override string ToString()
         {
             return $"<fn {_declaration.Name.lexeme} >";

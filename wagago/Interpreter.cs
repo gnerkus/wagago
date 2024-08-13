@@ -144,6 +144,11 @@
             return Evaluate(expr.Right);
         }
 
+        object Expr.IVisitor<object>.VisitThisExpr(This expr)
+        {
+            return LookUpVariable(expr.Keyword, expr);
+        }
+
         /// <summary>
         ///     The operand of a unary expression must be evaluated first.
         ///     <para>We cast to Double before applying the operator</para>

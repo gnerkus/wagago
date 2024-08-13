@@ -28,6 +28,7 @@
                             "Grouping       : Expr expression",
                             "Literal        : object value",
                             "Logical        : Expr left, Token operatr, Expr right",
+                            "This           : Token keyword",
                             "Unary          : Token operatr, Expr right",
                             "Variable       : Token name" // fetch the associated value, using name
                         });

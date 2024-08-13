@@ -13,6 +13,7 @@ namespace Wagago
       TR VisitGroupingExpr(Grouping expr);
       TR VisitLiteralExpr(Literal expr);
       TR VisitLogicalExpr(Logical expr);
+      TR VisitThisExpr(This expr);
       TR VisitUnaryExpr(Unary expr);
       TR VisitVariableExpr(Variable expr);
     }
@@ -148,6 +149,20 @@ namespace Wagago
     public readonly Expr Left;
     public readonly Token Operatr;
     public readonly Expr Right;
+  }
+ internal class This: Expr
+  {
+    internal This(Token keyword)
+    {
+      Keyword = keyword;
+    }
+
+    public override TR Accept<TR>(IVisitor<TR> visitor)
+    {
+      return visitor.VisitThisExpr(this);
+    }
+
+    public readonly Token Keyword;
   }
  internal class Unary: Expr
   {

@@ -11,12 +11,19 @@
         private readonly Interpreter _interpreter;
         private readonly Stack<Dictionary<string, bool>> _scopes = new ();
         private FunctionType _currentFunction = FunctionType.NONE;
+        private ClassType _currentClass = ClassType.NONE;
 
         private enum FunctionType
         {
             NONE,
             FUNCTION,
             METHOD
+        }
+
+        private enum ClassType
+        {
+            NONE,
+            CLASS
         }
 
         public Resolver(Interpreter interpreter)
@@ -77,6 +84,17 @@
         {
             Resolve(expr.Left);
             Resolve(expr.Right);
+            return null;
+        }
+
+        object Expr.IVisitor<object>.VisitThisExpr(This expr)
+        {
+            if (_currentClass == ClassType.NONE)
+            {
+                Wagago.error(expr.Keyword, "Can't use 'this' outside of a class");
+                return null;
+            }
+            ResolveLocal(expr, expr.Keyword);
             return null;
         }
 
@@ -188,10 +206,21 @@
             return null;
         }
         
+        /// <summary>
+        /// creates a scope for the 'this' variable within the class' scope
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
         object Stmt.IVisitor<object>.VisitClassStmt(Class stmt)
         {
+            var enclosingClass = _currentClass;
+            _currentClass = ClassType.CLASS;
+            
             Declare(stmt.Name);
             Define(stmt.Name);
+            
+            BeginScope();
+            _scopes.Peek()["this"] = true;
 
             foreach (var method in stmt.Methods)
             {
@@ -199,6 +228,9 @@
                 ResolveFunction(method, declaration);
             }
             
+            EndScope();
+
+            _currentClass = enclosingClass;
             return null;
         }
 
@@ -264,17 +296,24 @@
         }
         
         /// <summary>
-        /// scopes are stacked
-        /// when the scope for a local variable is found, the index of the stack corresponds to
-        /// the number of scopes before the variables scope was created. this is the depth
+        ///     scopes are stacked
+        /// <para>
+        ///     we start searching for the scope of the variable from the outermost scope
+        /// </para>
+        /// <para>
+        ///     when the scope for a local variable is found, the index corresponds to the
+        ///     distance from the scope to the innermost scope e.g a 0 means the scope is
+        ///     the innermost scope
+        /// </para>
         /// </summary>
         /// <param name="expr"></param>
         /// <param name="exprName"></param>
         private void ResolveLocal(Expr expr, Token exprName)
         {
+            var scopesArray = _scopes.ToArray();
             for (var i = _scopes.Count - 1; i >= 0; i--)
             {
-                if (!_scopes.ToArray()[i].ContainsKey(exprName.lexeme)) continue;
+                if (!scopesArray[i].ContainsKey(exprName.lexeme)) continue;
                 _interpreter.Resolve(expr, _scopes.Count - 1);
                 return;
             }

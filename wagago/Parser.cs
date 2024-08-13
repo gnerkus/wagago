@@ -309,6 +309,8 @@
             if (Match(TokenType.NUMBER, TokenType.STRING))
                 return new Literal(Previous().GetLiteral());
 
+            if (Match(TokenType.THIS)) return new This(Previous()); 
+            
             if (Match(TokenType.IDENTIFIER))
             {
                 return new Variable(Previous());
