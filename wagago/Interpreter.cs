@@ -181,8 +181,24 @@
             return null;
         }
 
+        /// <summary>
+        ///     Execute class definition; define a class
+        /// </summary>
+        /// <param name="stmt"></param>
+        /// <returns></returns>
+        /// <exception cref="RuntimeError"></exception>
         object Stmt.IVisitor<object>.VisitClassStmt(Class stmt)
         {
+            object superClass = null;
+            if (stmt.SuperClass != null)
+            {
+                superClass = Evaluate(stmt.SuperClass);
+                if (superClass is not WagagoClass)
+                {
+                    throw new RuntimeError(stmt.SuperClass.Name, "Superclass must be a class");
+                }
+            }
+            
             _environment.Define(stmt.Name.lexeme, null);
 
             var methods = new Dictionary<string, WagagoFunction>();
@@ -192,7 +208,7 @@
                 methods.Add(method.Name.lexeme, func);
             }
             
-            var klass = new WagagoClass(stmt.Name.lexeme, methods);
+            var klass = new WagagoClass(stmt.Name.lexeme, (WagagoClass)superClass, methods);
             _environment.Assign(stmt.Name, klass);
             return null;
         }

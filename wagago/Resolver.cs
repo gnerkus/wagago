@@ -223,6 +223,16 @@
             
             Declare(stmt.Name);
             Define(stmt.Name);
+
+            if (stmt.SuperClass != null && stmt.Name.lexeme.Equals(stmt.SuperClass.Name.lexeme))
+            {
+                Wagago.error(stmt.SuperClass.Name, "A class can't inherit from itself.");
+            }
+
+            if (stmt.SuperClass != null)
+            {
+                Resolve(stmt.SuperClass);
+            }
             
             BeginScope();
             _scopes.Peek()["this"] = true;

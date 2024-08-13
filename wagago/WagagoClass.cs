@@ -3,11 +3,13 @@
     public class WagagoClass: IWagagoCallable
     {
         public readonly string Name;
+        public readonly WagagoClass SuperClass;
         private readonly Dictionary<string, WagagoFunction> _methods;
 
-        public WagagoClass(string name, Dictionary<string, WagagoFunction> methods)
+        public WagagoClass(string name, WagagoClass superClass, Dictionary<string, WagagoFunction> methods)
         {
             Name = name;
+            SuperClass = superClass;
             _methods = methods;
         }
 

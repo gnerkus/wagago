@@ -10,7 +10,8 @@
     ///                         | varDecl
     ///                         | statement ;
     ///         varDecl         → "var" IDENTIFIER ( "=" expression )? ";" ;
-    ///         classDecl       → "class" IDENTIFIER "{" function* "}" ;
+    ///         classDecl       → "class" IDENTIFIER ( "&lt;" IDENTIFIER )?
+    ///                           "{" function* "}" ;
     ///         funDecl         → "fun" function ;
     ///         function        → IDENTIFIER "(" parameters? ")" block ;
     ///         statement       → exprStmt
@@ -466,6 +467,14 @@
         private Stmt ClassDeclaration()
         {
             var name = Consume(TokenType.IDENTIFIER, "Expect class name.");
+
+            Variable superClass = null;
+            if (Match(TokenType.LESS))
+            {
+                Consume(TokenType.IDENTIFIER, "Expect superclass name.");
+                superClass = new Variable(Previous());
+            }
+            
             Consume(TokenType.LEFT_BRACE, "Expect '{' before class body");
 
             var methods = new List<Func>();
@@ -476,7 +485,7 @@
 
             Consume(TokenType.RIGHT_BRACE, "Expect '}' after class body");
 
-            return new Class(name, methods);
+            return new Class(name, superClass, methods);
         }
         private Stmt FunctionDeclaration(string kind)
         {
