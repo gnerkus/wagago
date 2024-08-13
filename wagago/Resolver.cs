@@ -17,6 +17,7 @@
         {
             NONE,
             FUNCTION,
+            INITIALIZER,
             METHOD
         }
 
@@ -190,6 +191,10 @@
             
             if (stmt.Value != null)
             {
+                if (_currentFunction == FunctionType.INITIALIZER)
+                {
+                    Wagago.error(stmt.Keyword, "Can't return a value from an initializer.");
+                }
                 Resolve(stmt.Value);
             }
 
@@ -224,7 +229,11 @@
 
             foreach (var method in stmt.Methods)
             {
-                const FunctionType declaration = FunctionType.METHOD;
+                var declaration = FunctionType.METHOD;
+                if (method.Name.lexeme.Equals("init"))
+                {
+                    declaration = FunctionType.INITIALIZER;
+                }
                 ResolveFunction(method, declaration);
             }
             

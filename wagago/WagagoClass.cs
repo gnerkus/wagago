@@ -18,12 +18,17 @@
 
         public int Arity()
         {
-            return 0;
+            var initializer = FindMethod("init");
+            return initializer?.Arity() ?? 0;
         }
 
         public object Invocation(Interpreter interpreter, List<object> args)
         {
             var instance = new WagagoInstance(this);
+
+            var initializer = FindMethod("init");
+            initializer?.Bind(instance).Invocation(interpreter, args);
+
             return instance;
         }
 

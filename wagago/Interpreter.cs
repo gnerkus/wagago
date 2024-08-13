@@ -188,7 +188,7 @@
             var methods = new Dictionary<string, WagagoFunction>();
             foreach (var method in stmt.Methods)
             {
-                var func = new WagagoFunction(method, _environment);
+                var func = new WagagoFunction(method, _environment, method.Name.lexeme.Equals("init"));
                 methods.Add(method.Name.lexeme, func);
             }
             
@@ -263,7 +263,7 @@
 
         object Stmt.IVisitor<object>.VisitFuncStmt(Func stmt)
         {
-            var func = new WagagoFunction(stmt, _environment);
+            var func = new WagagoFunction(stmt, _environment, false);
             _environment.Define(stmt.Name.lexeme, func);
             return null;
         }

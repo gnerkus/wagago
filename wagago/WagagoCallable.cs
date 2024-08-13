@@ -41,18 +41,29 @@
     public class WagagoFunction : IWagagoCallable
     {
         private readonly Func _declaration;
-        private readonly Env _closure; 
+        private readonly Env _closure;
+        private readonly bool _isInitializer;
 
-        internal WagagoFunction(Func declaration, Env closure)
+        internal WagagoFunction(Func declaration, Env closure, bool isInitializer)
         {
             _declaration = declaration;
             _closure = closure;
+            _isInitializer = isInitializer;
         }
         public int Arity()
         {
             return _declaration.FuncParams.Count;
         }
 
+        /// <summary>
+        ///     executes the code defined in a function statement's block and returns a result if any
+        ///     <para>
+        ///         also returns the class instance when the constructor is called (_isInitializer is true)
+        ///     </para>
+        /// </summary>
+        /// <param name="interpreter"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public object Invocation(Interpreter interpreter, List<object> args)
         {
             // the function call gets its own environment (execution context), bound to the global as a child environment
@@ -70,8 +81,12 @@
             }
             catch (ReturnException returnValue)
             {
+                if (_isInitializer) return _closure.GetAt(0, "this");
                 return returnValue.Value;
             }
+            
+            if (_isInitializer) return _closure.GetAt(0, "this");
+            
             return null;
         }
 
@@ -79,7 +94,7 @@
         {
             var env = new Env(_closure);
             env.Define("this", instance);
-            return new WagagoFunction(_declaration, env);
+            return new WagagoFunction(_declaration, env, _isInitializer);
         }
 
         public override string ToString()
