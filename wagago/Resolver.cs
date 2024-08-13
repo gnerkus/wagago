@@ -15,7 +15,8 @@
         private enum FunctionType
         {
             NONE,
-            FUNCTION
+            FUNCTION,
+            METHOD
         }
 
         public Resolver(Interpreter interpreter)
@@ -191,6 +192,13 @@
         {
             Declare(stmt.Name);
             Define(stmt.Name);
+
+            foreach (var method in stmt.Methods)
+            {
+                const FunctionType declaration = FunctionType.METHOD;
+                ResolveFunction(method, declaration);
+            }
+            
             return null;
         }
 

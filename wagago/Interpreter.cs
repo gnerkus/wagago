@@ -103,13 +103,13 @@
         {
             var owner = Evaluate(expr.Owner);
 
-            if (owner is not WagagoInstance)
+            if (owner is not WagagoInstance instance)
             {
                 throw new RuntimeError(expr.Name, "Only instances have fields");
             }
 
             var value = Evaluate(expr.Value);
-            ((WagagoInstance)owner).Set(expr.Name, value);
+            instance.Set(expr.Name, value);
             return value;
         }
 
@@ -179,7 +179,15 @@
         object Stmt.IVisitor<object>.VisitClassStmt(Class stmt)
         {
             _environment.Define(stmt.Name.lexeme, null);
-            WagagoClass klass = new WagagoClass(stmt.Name.lexeme);
+
+            var methods = new Dictionary<string, WagagoFunction>();
+            foreach (var method in stmt.Methods)
+            {
+                var func = new WagagoFunction(method, _environment);
+                methods.Add(method.Name.lexeme, func);
+            }
+            
+            var klass = new WagagoClass(stmt.Name.lexeme, methods);
             _environment.Assign(stmt.Name, klass);
             return null;
         }

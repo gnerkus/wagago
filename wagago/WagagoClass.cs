@@ -3,10 +3,12 @@
     public class WagagoClass: IWagagoCallable
     {
         public readonly string Name;
+        private readonly Dictionary<string, WagagoFunction> _methods;
 
-        public WagagoClass(string name)
+        public WagagoClass(string name, Dictionary<string, WagagoFunction> methods)
         {
             Name = name;
+            _methods = methods;
         }
 
         public override string ToString()
@@ -23,6 +25,11 @@
         {
             var instance = new WagagoInstance(this);
             return instance;
+        }
+
+        public WagagoFunction FindMethod(string name)
+        {
+            return _methods.TryGetValue(name, out var method) ? method : null;
         }
     }
 }
