@@ -4,11 +4,11 @@
     ///
     /// <para>native functions are stored in the global scope (environment)</para>
     /// </summary>
-    public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
+    public class Interpreter : IExpr.IVisitor<object>, Stmt.IVisitor<object>
     {
         internal readonly Env Globals = new();
         private Env _environment;
-        private readonly Dictionary<Expr, int> _locals = new();
+        private readonly Dictionary<IExpr, int> _locals = new();
 
         public Interpreter()
         {
@@ -16,12 +16,12 @@
             Globals.Define("clock", new WagagoClock());
         }
 
-        internal void Resolve(Expr expr, int depth)
+        internal void Resolve(IExpr expr, int depth)
         {
             _locals[expr] = depth;
         }
         
-        object Expr.IVisitor<object>.VisitBinaryExpr(Binary expr)
+        object IExpr.IVisitor<object>.VisitBinaryExpr(Binary expr)
         {
             var left = Evaluate(expr.Left);
             var right = Evaluate(expr.Right);
@@ -68,7 +68,7 @@
         /// <returns></returns>
         /// <exception cref="RuntimeError">Thrown when the expressions callee is not a callable</exception>
         /// <exception cref="RuntimeError">Thrown when there are too few or too many function arguments</exception>
-        object Expr.IVisitor<object>.VisitInvocationExpr(Invocation expr)
+        object IExpr.IVisitor<object>.VisitInvocationExpr(Invocation expr)
         {
             var callee = Evaluate(expr.Callee);
 
@@ -88,7 +88,7 @@
             return callable.Invocation(this, args);
         }
 
-        object Expr.IVisitor<object>.VisitPropGetExpr(PropGet expr)
+        object IExpr.IVisitor<object>.VisitPropGetExpr(PropGet expr)
         {
             var owner = Evaluate(expr.Owner);
             if (owner is WagagoInstance instance)
@@ -99,7 +99,7 @@
             throw new RuntimeError(expr.Name, "Only instances have properties");
         }
 
-        object Expr.IVisitor<object>.VisitPropSetExpr(PropSet expr)
+        object IExpr.IVisitor<object>.VisitPropSetExpr(PropSet expr)
         {
             var owner = Evaluate(expr.Owner);
 
@@ -128,7 +128,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        object Expr.IVisitor<object>.VisitSuperExpr(Super expr)
+        object IExpr.IVisitor<object>.VisitSuperExpr(Super expr)
         {
             // the distance of the scope in which `super` was declared from the current scope
             var distance = _locals[expr];
@@ -150,17 +150,17 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        object Expr.IVisitor<object>.VisitGroupingExpr(Grouping expr)
+        object IExpr.IVisitor<object>.VisitGroupingExpr(Grouping expr)
         {
             return Evaluate(expr.Expression);
         }
 
-        object Expr.IVisitor<object>.VisitLiteralExpr(Literal expr)
+        object IExpr.IVisitor<object>.VisitLiteralExpr(Literal expr)
         {
             return expr.Value;
         }
 
-        object Expr.IVisitor<object>.VisitLogicalExpr(Logical expr)
+        object IExpr.IVisitor<object>.VisitLogicalExpr(Logical expr)
         {
             var left = Evaluate(expr.Left);
 
@@ -176,7 +176,7 @@
             return Evaluate(expr.Right);
         }
 
-        object Expr.IVisitor<object>.VisitThisExpr(This expr)
+        object IExpr.IVisitor<object>.VisitThisExpr(This expr)
         {
             return LookUpVariable(expr.Keyword, expr);
         }
@@ -187,7 +187,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        object Expr.IVisitor<object>.VisitUnaryExpr(Unary expr)
+        object IExpr.IVisitor<object>.VisitUnaryExpr(Unary expr)
         {
             var right = Evaluate(expr.Right);
 
@@ -202,7 +202,7 @@
             return null!;
         }
 
-        object Expr.IVisitor<object>.VisitVariableExpr(Variable expr)
+        object IExpr.IVisitor<object>.VisitVariableExpr(Variable expr)
         {
             return LookUpVariable(expr.Name, expr);
         }
@@ -330,7 +330,7 @@
             return null!;
         }
 
-        object Expr.IVisitor<object>.VisitAssignExpr(Assign expr)
+        object IExpr.IVisitor<object>.VisitAssignExpr(Assign expr)
         {
             var value = Evaluate(expr.Value);
 
@@ -363,7 +363,7 @@
             throw new RuntimeError(operatr, "Operands must be two numbers or two strings");
         }
 
-        private object Evaluate(Expr expr)
+        private object Evaluate(IExpr expr)
         {
             return expr.Accept(this);
         }
@@ -455,7 +455,7 @@
             return true;
         }
         
-        private object LookUpVariable(Token exprName, Expr expr)
+        private object LookUpVariable(Token exprName, IExpr expr)
         {
             var hasDistance = _locals.TryGetValue(expr, out var distance);
             return hasDistance ? _environment.GetAt(distance, exprName.lexeme) : Globals.Get(exprName);

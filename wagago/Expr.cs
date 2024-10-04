@@ -1,8 +1,8 @@
 namespace Wagago
 {
-  internal abstract class Expr
+  internal interface IExpr
   {
-    public abstract TR Accept<TR>(IVisitor<TR> visitor);
+    public TR Accept<TR>(IVisitor<TR> visitor);
 
    internal interface IVisitor<out TR> {
       TR VisitAssignExpr(Assign expr);
@@ -19,93 +19,93 @@ namespace Wagago
       TR VisitVariableExpr(Variable expr);
     }
   }
- internal class Assign: Expr
+ internal class Assign: IExpr
   {
-    internal Assign(Token identifier, Expr value)
+    internal Assign(Token identifier, IExpr value)
     {
       Identifier = identifier;
       Value = value;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitAssignExpr(this);
     }
 
     public readonly Token Identifier;
-    public readonly Expr Value;
+    public readonly IExpr Value;
   }
- internal class Binary: Expr
+ internal class Binary: IExpr
   {
-    internal Binary(Expr left, Token operatr, Expr right)
+    internal Binary(IExpr left, Token operatr, IExpr right)
     {
       Left = left;
       Operatr = operatr;
       Right = right;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitBinaryExpr(this);
     }
 
-    public readonly Expr Left;
+    public readonly IExpr Left;
     public readonly Token Operatr;
-    public readonly Expr Right;
+    public readonly IExpr Right;
   }
- internal class Invocation: Expr
+ internal class Invocation: IExpr
   {
-    internal Invocation(Expr callee, Token paren, List<Expr> arguments)
+    internal Invocation(IExpr callee, Token paren, List<IExpr> arguments)
     {
       Callee = callee;
       Paren = paren;
       Arguments = arguments;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitInvocationExpr(this);
     }
 
-    public readonly Expr Callee;
+    public readonly IExpr Callee;
     public readonly Token Paren;
-    public readonly List<Expr> Arguments;
+    public readonly List<IExpr> Arguments;
   }
- internal class PropGet: Expr
+ internal class PropGet: IExpr
   {
-    internal PropGet(Expr owner, Token name)
+    internal PropGet(IExpr owner, Token name)
     {
       Owner = owner;
       Name = name;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitPropGetExpr(this);
     }
 
-    public readonly Expr Owner;
+    public readonly IExpr Owner;
     public readonly Token Name;
   }
- internal class PropSet: Expr
+ internal class PropSet: IExpr
   {
-    internal PropSet(Expr owner, Token name, Expr value)
+    internal PropSet(IExpr owner, Token name, IExpr value)
     {
       Owner = owner;
       Name = name;
       Value = value;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitPropSetExpr(this);
     }
 
-    public readonly Expr Owner;
+    public readonly IExpr Owner;
     public readonly Token Name;
-    public readonly Expr Value;
+    public readonly IExpr Value;
   }
- internal class Super: Expr
+ internal class Super: IExpr
   {
     internal Super(Token keyword, Token method)
     {
@@ -113,7 +113,7 @@ namespace Wagago
       Method = method;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitSuperExpr(this);
     }
@@ -121,90 +121,90 @@ namespace Wagago
     public readonly Token Keyword;
     public readonly Token Method;
   }
- internal class Grouping: Expr
+ internal class Grouping: IExpr
   {
-    internal Grouping(Expr expression)
+    internal Grouping(IExpr expression)
     {
       Expression = expression;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitGroupingExpr(this);
     }
 
-    public readonly Expr Expression;
+    public readonly IExpr Expression;
   }
- internal class Literal: Expr
+ internal class Literal: IExpr
   {
     internal Literal(object value)
     {
       Value = value;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitLiteralExpr(this);
     }
 
     public readonly object Value;
   }
- internal class Logical: Expr
+ internal class Logical: IExpr
   {
-    internal Logical(Expr left, Token operatr, Expr right)
+    internal Logical(IExpr left, Token operatr, IExpr right)
     {
       Left = left;
       Operatr = operatr;
       Right = right;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitLogicalExpr(this);
     }
 
-    public readonly Expr Left;
+    public readonly IExpr Left;
     public readonly Token Operatr;
-    public readonly Expr Right;
+    public readonly IExpr Right;
   }
- internal class This: Expr
+ internal class This: IExpr
   {
     internal This(Token keyword)
     {
       Keyword = keyword;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitThisExpr(this);
     }
 
     public readonly Token Keyword;
   }
- internal class Unary: Expr
+ internal class Unary: IExpr
   {
-    internal Unary(Token operatr, Expr right)
+    internal Unary(Token operatr, IExpr right)
     {
       Operatr = operatr;
       Right = right;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitUnaryExpr(this);
     }
 
     public readonly Token Operatr;
-    public readonly Expr Right;
+    public readonly IExpr Right;
   }
- internal class Variable: Expr
+ internal class Variable: IExpr
   {
     internal Variable(Token name)
     {
       Name = name;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IExpr.IVisitor<TR> visitor)
     {
       return visitor.VisitVariableExpr(this);
     }

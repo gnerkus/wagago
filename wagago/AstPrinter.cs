@@ -3,75 +3,75 @@
     /// <summary>
     ///     A kind of visitor for Wagago that prints the AST to the console
     /// </summary>
-    public class AstPrinter : Expr.IVisitor<string>
+    public class AstPrinter : IExpr.IVisitor<string>
     {
-        string Expr.IVisitor<string>.VisitBinaryExpr(Binary expr)
+        string IExpr.IVisitor<string>.VisitBinaryExpr(Binary expr)
         {
             return Parenthesize(expr.Operatr.lexeme, expr.Left, expr.Right);
         }
 
-        string Expr.IVisitor<string>.VisitInvocationExpr(Invocation expr)
+        string IExpr.IVisitor<string>.VisitInvocationExpr(Invocation expr)
         {
             throw new NotImplementedException();
         }
 
-        string Expr.IVisitor<string>.VisitPropGetExpr(PropGet expr)
+        string IExpr.IVisitor<string>.VisitPropGetExpr(PropGet expr)
         {
             throw new NotImplementedException();
         }
 
-        string Expr.IVisitor<string>.VisitPropSetExpr(PropSet expr)
+        string IExpr.IVisitor<string>.VisitPropSetExpr(PropSet expr)
         {
             throw new NotImplementedException();
         }
 
-        string Expr.IVisitor<string>.VisitSuperExpr(Super expr)
+        string IExpr.IVisitor<string>.VisitSuperExpr(Super expr)
         {
             throw new NotImplementedException();
         }
 
-        string Expr.IVisitor<string>.VisitGroupingExpr(Grouping expr)
+        string IExpr.IVisitor<string>.VisitGroupingExpr(Grouping expr)
         {
             return Parenthesize("group", expr.Expression);
         }
 
-        string Expr.IVisitor<string>.VisitLiteralExpr(Literal expr)
+        string IExpr.IVisitor<string>.VisitLiteralExpr(Literal expr)
         {
             return expr.Value.Equals(null) ? "nil" : expr.Value.ToString() ?? "nil";
         }
 
-        string Expr.IVisitor<string>.VisitLogicalExpr(Logical expr)
+        string IExpr.IVisitor<string>.VisitLogicalExpr(Logical expr)
         {
             throw new NotImplementedException();
         }
 
-        string Expr.IVisitor<string>.VisitThisExpr(This expr)
+        string IExpr.IVisitor<string>.VisitThisExpr(This expr)
         {
             throw new NotImplementedException();
         }
 
-        string Expr.IVisitor<string>.VisitUnaryExpr(Unary expr)
+        string IExpr.IVisitor<string>.VisitUnaryExpr(Unary expr)
         {
             return Parenthesize(expr.Operatr.lexeme, expr.Right);
         }
 
-        string Expr.IVisitor<string>.VisitVariableExpr(Variable expr)
+        string IExpr.IVisitor<string>.VisitVariableExpr(Variable expr)
         {
             
             throw new NotImplementedException();
         }
         
-        string Expr.IVisitor<string>.VisitAssignExpr(Assign expr)
+        string IExpr.IVisitor<string>.VisitAssignExpr(Assign expr)
         {
             throw new NotImplementedException();
         }
 
-        internal string Print(Expr expr)
+        internal string Print(IExpr expr)
         {
             return expr.Accept(this);
         }
 
-        private string Parenthesize(string name, params Expr[] exprs)
+        private string Parenthesize(string name, params IExpr[] exprs)
         {
             var output = new List<string>
             {
