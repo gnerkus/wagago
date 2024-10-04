@@ -31,9 +31,9 @@
         /// <exception cref="RuntimeError"></exception>
         public object Get(Token name)
         {
-            if (_values.ContainsKey(name.lexeme))
+            if (_values.TryGetValue(name.lexeme, out var varValue))
             {
-                return _values[name.lexeme];
+                return varValue;
             }
 
             if (Enclosing != null)
@@ -62,7 +62,6 @@
             return Ancestor(distance)._values[exprNameLexeme];
         }
 
-        // TODO: check if we can use the same ancestor if no enclosing
         private Env Ancestor(int distance)
         {
             var ancestor = this;
