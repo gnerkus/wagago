@@ -6,7 +6,7 @@
     ///     - define scopes for blocks and functions
     /// </para>
     /// </summary>
-    public class Resolver: Expr.IVisitor<object>, Stmt.IVisitor<object>
+    public class Resolver: IExpr.IVisitor<object>, Stmt.IVisitor<object>
     {
         private readonly Interpreter _interpreter;
         private readonly Stack<Dictionary<string, bool>> _scopes = new ();
@@ -33,21 +33,21 @@
             _interpreter = interpreter;
         }
 
-        object Expr.IVisitor<object>.VisitAssignExpr(Assign expr)
+        object IExpr.IVisitor<object>.VisitAssignExpr(Assign expr)
         {
             Resolve(expr.Value);
             ResolveLocal(expr, expr.Identifier);
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitBinaryExpr(Binary expr)
+        object IExpr.IVisitor<object>.VisitBinaryExpr(Binary expr)
         {
             Resolve(expr.Left);
             Resolve(expr.Right);
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitInvocationExpr(Invocation expr)
+        object IExpr.IVisitor<object>.VisitInvocationExpr(Invocation expr)
         {
             Resolve(expr.Callee);
             foreach (var arg in expr.Arguments)
@@ -58,20 +58,20 @@
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitPropGetExpr(PropGet expr)
+        object IExpr.IVisitor<object>.VisitPropGetExpr(PropGet expr)
         {
             Resolve(expr.Owner);
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitPropSetExpr(PropSet expr)
+        object IExpr.IVisitor<object>.VisitPropSetExpr(PropSet expr)
         {
             Resolve(expr.Value);
             Resolve(expr.Owner);
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitSuperExpr(Super expr)
+        object IExpr.IVisitor<object>.VisitSuperExpr(Super expr)
         {
             if (_currentClass == ClassType.NONE)
             {
@@ -85,25 +85,25 @@
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitGroupingExpr(Grouping expr)
+        object IExpr.IVisitor<object>.VisitGroupingExpr(Grouping expr)
         {
             Resolve(expr.Expression);
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitLiteralExpr(Literal expr)
+        object IExpr.IVisitor<object>.VisitLiteralExpr(Literal expr)
         {
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitLogicalExpr(Logical expr)
+        object IExpr.IVisitor<object>.VisitLogicalExpr(Logical expr)
         {
             Resolve(expr.Left);
             Resolve(expr.Right);
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitThisExpr(This expr)
+        object IExpr.IVisitor<object>.VisitThisExpr(This expr)
         {
             if (_currentClass == ClassType.NONE)
             {
@@ -114,13 +114,13 @@
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitUnaryExpr(Unary expr)
+        object IExpr.IVisitor<object>.VisitUnaryExpr(Unary expr)
         {
             Resolve(expr.Right);
             return null;
         }
 
-        object Expr.IVisitor<object>.VisitVariableExpr(Variable expr)
+        object IExpr.IVisitor<object>.VisitVariableExpr(Variable expr)
         {
 
             if (_scopes.Count > 0)
@@ -292,7 +292,7 @@
             stmt.Accept(this);
         }
 
-        private void Resolve(Expr expr)
+        private void Resolve(IExpr expr)
         {
             expr.Accept(this);
         }
@@ -353,7 +353,7 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <param name="exprName"></param>
-        private void ResolveLocal(Expr expr, Token exprName)
+        private void ResolveLocal(IExpr expr, Token exprName)
         {
             var scopesArray = _scopes.ToArray();
             for (var i = _scopes.Count - 1; i >= 0; i--)

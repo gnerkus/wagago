@@ -77,13 +77,13 @@
             _tokens = tokens;
         }
 
-        private Expr ParseExpression()
+        private IExpr ParseExpression()
         {
             // descend into the equality rule
             return Assignment();
         }
 
-        private Expr Assignment()
+        private IExpr Assignment()
         {
             // 1. keep evaluating until you reach `primary` which would return an IDENTIFIER
             // cursor moves forward
@@ -111,7 +111,7 @@
             }
         }
 
-        private Expr Or()
+        private IExpr Or()
         {
             var expr = And();
 
@@ -125,7 +125,7 @@
             return expr;
         }
 
-        private Expr And()
+        private IExpr And()
         {
             var expr = Equality();
             
@@ -146,7 +146,7 @@
         ///     </code>
         /// </summary>
         /// <returns></returns>
-        private Expr Equality()
+        private IExpr Equality()
         {
             // the first non-terminal comparison
             // descend into the comparison rule
@@ -175,7 +175,7 @@
         ///     </code>
         /// </summary>
         /// <returns></returns>
-        private Expr TokenComparison()
+        private IExpr TokenComparison()
         {
             var expr = Term();
 
@@ -197,7 +197,7 @@
         ///     </code>
         /// </summary>
         /// <returns></returns>
-        private Expr Term()
+        private IExpr Term()
         {
             var expr = Factor();
 
@@ -218,7 +218,7 @@
         ///     </code>
         /// </summary>
         /// <returns></returns>
-        private Expr Factor()
+        private IExpr Factor()
         {
             var expr = TokenUnary();
 
@@ -239,7 +239,7 @@
         ///     </code>
         /// </summary>
         /// <returns></returns>
-        private Expr TokenUnary()
+        private IExpr TokenUnary()
         {
             if (!Match(TokenType.BANG, TokenType.MINUS)) return Invocation();
             var optr = Previous();
@@ -247,7 +247,7 @@
             return new Unary(optr, right);
         }
 
-        private Expr Invocation()
+        private IExpr Invocation()
         {
             var expr = Primary();
 
@@ -271,9 +271,9 @@
             return expr;
         }
 
-        private Expr FinishInvocation(Expr callee)
+        private IExpr FinishInvocation(IExpr callee)
         {
-            var args = new List<Expr>();
+            var args = new List<IExpr>();
             if (!Check(TokenType.RIGHT_PAREN))
             {
                 // while there's a comma, collate arguments
@@ -300,7 +300,7 @@
         ///     </code>
         /// </summary>
         /// <returns></returns>
-        private Expr Primary()
+        private IExpr Primary()
         {
             if (Match(TokenType.FALSE)) return new Literal(false);
             if (Match(TokenType.TRUE)) return new Literal(true);
@@ -533,7 +533,7 @@
             // 1. get the identifier
             var name = Consume(TokenType.IDENTIFIER, "Expect variable name");
 
-            Expr initializer = null;
+            IExpr initializer = null;
             
             // 2. if the next token is "=", we handle the variable definition
             // and parse the expression that follows
@@ -640,14 +640,14 @@
                 initializer = ExpressionStatement();
             }
 
-            Expr condition = null;
+            IExpr condition = null;
             if (!Check(TokenType.SEMICOLON))
             {
                 condition = ParseExpression();
             }
             Consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
 
-            Expr increment = null;
+            IExpr increment = null;
             if (!Check(TokenType.RIGHT_PAREN))
             {
                 increment = ParseExpression();
@@ -676,7 +676,7 @@
         {
             // keep the 'return' keyword so the location can be used for error reporting
             var keyword = Previous();
-            Expr value = null;
+            IExpr value = null;
             if (!Check(TokenType.SEMICOLON))
             {
                 value = ParseExpression();

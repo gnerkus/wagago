@@ -50,7 +50,7 @@ namespace Wagago
   }
  internal class Expression: Stmt
   {
-    internal Expression(Expr expressn)
+    internal Expression(IExpr expressn)
     {
       Expressn = expressn;
     }
@@ -60,11 +60,11 @@ namespace Wagago
       return visitor.VisitExpressionStmt(this);
     }
 
-    public readonly Expr Expressn;
+    public readonly IExpr Expressn;
   }
  internal class Print: Stmt
   {
-    internal Print(Expr expression)
+    internal Print(IExpr expression)
     {
       Expression = expression;
     }
@@ -74,11 +74,11 @@ namespace Wagago
       return visitor.VisitPrintStmt(this);
     }
 
-    public readonly Expr Expression;
+    public readonly IExpr Expression;
   }
  internal class If: Stmt
   {
-    internal If(Expr condition, Stmt thenBranch, Stmt elseBranch)
+    internal If(IExpr condition, Stmt thenBranch, Stmt elseBranch)
     {
       Condition = condition;
       ThenBranch = thenBranch;
@@ -90,13 +90,13 @@ namespace Wagago
       return visitor.VisitIfStmt(this);
     }
 
-    public readonly Expr Condition;
+    public readonly IExpr Condition;
     public readonly Stmt ThenBranch;
     public readonly Stmt ElseBranch;
   }
  internal class While: Stmt
   {
-    internal While(Expr condition, Stmt body)
+    internal While(IExpr condition, Stmt body)
     {
       Condition = condition;
       Body = body;
@@ -107,12 +107,12 @@ namespace Wagago
       return visitor.VisitWhileStmt(this);
     }
 
-    public readonly Expr Condition;
+    public readonly IExpr Condition;
     public readonly Stmt Body;
   }
  internal class Var: Stmt
   {
-    internal Var(Token identifier, Expr initializer)
+    internal Var(Token identifier, IExpr initializer)
     {
       Identifier = identifier;
       Initializer = initializer;
@@ -124,11 +124,11 @@ namespace Wagago
     }
 
     public readonly Token Identifier;
-    public readonly Expr Initializer;
+    public readonly IExpr Initializer;
   }
  internal class Return: Stmt
   {
-    internal Return(Token keyword, Expr value)
+    internal Return(Token keyword, IExpr value)
     {
       Keyword = keyword;
       Value = value;
@@ -140,7 +140,7 @@ namespace Wagago
     }
 
     public readonly Token Keyword;
-    public readonly Expr Value;
+    public readonly IExpr Value;
   }
  internal class Func: Stmt
   {
