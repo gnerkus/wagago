@@ -55,9 +55,9 @@
                     return !Equals(left, right);
                 case TokenType.EQUAL_EQUAL:
                     return Equals(left, right);
-                default:
-                    return null;
             }
+
+            return null!;
         }
 
 
@@ -199,7 +199,7 @@
 
             if (expr.Operatr.GetTokenType() == TokenType.BANG) return !IsTruthy(right);
 
-            return null;
+            return null!;
         }
 
         object Expr.IVisitor<object>.VisitVariableExpr(Variable expr)
@@ -210,7 +210,7 @@
         object Stmt.IVisitor<object>.VisitBlockStmt(Block stmt)
         {
             ExecuteBlock(stmt.Statements, new Env(_environment));
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -262,14 +262,14 @@
         object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
         {
             Evaluate(stmt.Expressn);
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitPrintStmt(Print stmt)
         {
             var value = Evaluate(stmt.Expression);
             Console.WriteLine(Stringify(value));
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitIfStmt(If stmt)
@@ -283,7 +283,7 @@
                 Execute(stmt.ElseBranch);
             }
 
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitWhileStmt(While stmt)
@@ -293,7 +293,7 @@
                 Execute(stmt.Body);
             }
 
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -312,7 +312,7 @@
             }
 
             _environment.Define(stmt.Identifier.lexeme, value);
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitReturnStmt(Return stmt)
@@ -327,7 +327,7 @@
         {
             var func = new WagagoFunction(stmt, _environment, false);
             _environment.Define(stmt.Name.lexeme, func);
-            return null;
+            return null!;
         }
 
         object Expr.IVisitor<object>.VisitAssignExpr(Assign expr)
@@ -442,7 +442,7 @@
         }
 
         /// <summary>
-        ///     Implement Ruby's truthy rule: only false and nil are falsy
+        ///     Implement Ruby's truthy rule: only false and null are falsy
         /// </summary>
         /// <param name="right"></param>
         /// <returns></returns>
