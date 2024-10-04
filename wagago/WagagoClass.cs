@@ -3,10 +3,10 @@
     public class WagagoClass: IWagagoCallable
     {
         public readonly string Name;
-        public readonly WagagoClass SuperClass;
+        public readonly WagagoClass? SuperClass;
         private readonly Dictionary<string, WagagoFunction> _methods;
 
-        public WagagoClass(string name, WagagoClass superClass, Dictionary<string, WagagoFunction> methods)
+        public WagagoClass(string name, WagagoClass? superClass, Dictionary<string, WagagoFunction> methods)
         {
             Name = name;
             SuperClass = superClass;
@@ -34,7 +34,7 @@
             return instance;
         }
 
-        public WagagoFunction FindMethod(string name)
+        public WagagoFunction? FindMethod(string name)
         {
             return _methods.ContainsKey(name) ? _methods[name] : SuperClass?.FindMethod(name);
         }

@@ -221,7 +221,9 @@
         /// <exception cref="RuntimeError"></exception>
         object Stmt.IVisitor<object>.VisitClassStmt(Class stmt)
         {
-            object superClass = null;
+            object superClass = null!;
+            _environment.Define(stmt.Name.lexeme, null!);
+
             if (stmt.SuperClass != null)
             {
                 superClass = Evaluate(stmt.SuperClass);
@@ -229,34 +231,29 @@
                 {
                     throw new RuntimeError(stmt.SuperClass.Name, "Superclass must be a class");
                 }
-            }
-            
-            _environment.Define(stmt.Name.lexeme, null);
-
-            // add a ref to the super class to the environment
-            if (stmt.SuperClass != null)
-            {
+                
+                // add a ref to the super class to the environment
                 _environment = new Env(_environment);
                 _environment.Define("super", superClass);
             }
-            
+
             var methods = new Dictionary<string, WagagoFunction>();
             foreach (var method in stmt.Methods)
             {
                 var func = new WagagoFunction(method, _environment, method.Name.lexeme.Equals("init"));
                 methods.Add(method.Name.lexeme, func);
             }
-            
+
             var klass = new WagagoClass(stmt.Name.lexeme, (WagagoClass)superClass, methods);
 
             if (superClass != null)
             {
-                _environment = _environment.Enclosing;
+                _environment = _environment.Enclosing!;
             }
 
             _environment?.Assign(stmt.Name, klass);
 
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
@@ -305,7 +302,7 @@
         /// <returns></returns>
         object Stmt.IVisitor<object>.VisitVarStmt(Var stmt)
         {
-            object value = null;
+            object value = null!;
             if (stmt.Initializer != null)
             {
                 value = Evaluate(stmt.Initializer);
@@ -317,7 +314,7 @@
 
         object Stmt.IVisitor<object>.VisitReturnStmt(Return stmt)
         {
-            object value = null;
+            object value = null!;
             if (stmt.Value != null) value = Evaluate(stmt.Value);
 
             throw new ReturnException(value);
