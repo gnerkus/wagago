@@ -340,7 +340,7 @@
         /// <param name="tokenType"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        /// <exception cref="ParserError"></exception>
+        /// <exception cref="ParserException"></exception>
         private Token Consume(TokenType tokenType, string message)
         {
             if (Check(tokenType)) return Advance();
@@ -348,10 +348,10 @@
             throw Error(Peek(), message);
         }
 
-        private static ParserError Error(Token token, string message)
+        private static ParserException Error(Token token, string message)
         {
             Wagago.error(token, message);
-            return new ParserError();
+            return new ParserException();
         }
 
         /// <summary>
@@ -464,7 +464,7 @@
                 if (Match(TokenType.FUN)) return FunctionDeclaration("function");
                 return Match(TokenType.VAR) ? VarDeclaration() : Statement();
             }
-            catch (ParserError error)
+            catch (ParserException error)
             {
                 Synchronize();
                 return null;
@@ -559,7 +559,7 @@
             if (Match(TokenType.FOR)) return ForStatement();
             if (Match(TokenType.IF)) return IfStatement();
             if (Match(TokenType.PRINT)) return PrintStatement();
-            if (Match(TokenType.RETURN)) return ReturnStatment();
+            if (Match(TokenType.RETURN)) return ReturnStatement();
             if (Match(TokenType.WHILE)) return WhileStatement();
             
             return Match(TokenType.LEFT_BRACE) ? new Block(ParserBlock()) : ExpressionStatement();
@@ -672,7 +672,7 @@
             return body;
         }
         
-        private Stmt ReturnStatment()
+        private Stmt ReturnStatement()
         {
             // keep the 'return' keyword so the location can be used for error reporting
             var keyword = Previous();
@@ -686,7 +686,7 @@
             return new Return(keyword, value);
         }
 
-        private class ParserError : SystemException
+        public class ParserException : SystemException
         {
         }
     }
