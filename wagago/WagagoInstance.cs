@@ -12,9 +12,9 @@
 
         public object Get(Token name)
         {
-            if (_fields.ContainsKey(name.lexeme))
+            if (_fields.TryGetValue(name.lexeme, out var field))
             {
-                return _fields[name.lexeme];
+                return field;
             }
 
             var method = _klass.FindMethod(name.lexeme);
