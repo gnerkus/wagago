@@ -129,7 +129,7 @@
                     else if (IsAlpha(c))
                         Identifier();
                     else
-                        Wagago.error(_line, "Unexpected character.");
+                        Wagago.ReportError(_line, "Unexpected character.");
 
                     break;
             }
@@ -191,7 +191,7 @@
 
             if (IsAtEnd())
             {
-                Wagago.error(_line, "Unterminated string.");
+                Wagago.ReportError(_line, "Unterminated string.");
                 return;
             }
 
@@ -214,13 +214,13 @@
 
             if (IsAtEnd())
             {
-                Wagago.error(_line, "Unterminated block-style comment.");
+                Wagago.ReportError(_line, "Unterminated block-style comment.");
                 return;
             }
 
             if (Peek(1) != '/')
             {
-                Wagago.error(_line, "Improperly terminated block-style comment.");
+                Wagago.ReportError(_line, "Improperly terminated block-style comment.");
                 return;
             }
 

@@ -304,7 +304,7 @@
         {
             if (Match(TokenType.FALSE)) return new Literal(false);
             if (Match(TokenType.TRUE)) return new Literal(true);
-            if (Match(TokenType.NIL)) return new Literal(null);
+            if (Match(TokenType.NIL)) return new Literal(null!);
 
             if (Match(TokenType.NUMBER, TokenType.STRING))
                 return new Literal(Previous().GetLiteral());
@@ -350,7 +350,7 @@
 
         private static ParserException Error(Token token, string message)
         {
-            Wagago.error(token, message);
+            Wagago.ReportError(token, message);
             return new ParserException();
         }
 
@@ -391,7 +391,7 @@
         /// <returns>false, if the current token does not match any of the types</returns>
         private bool Match(params TokenType[] types)
         {
-            if (!types.Any(Check)) return false;
+            if (!Array.Exists(types, Check)) return false;
             Advance();
             return true;
         }
@@ -464,10 +464,10 @@
                 if (Match(TokenType.FUN)) return FunctionDeclaration("function");
                 return Match(TokenType.VAR) ? VarDeclaration() : Statement();
             }
-            catch (ParserException error)
+            catch (ParserException)
             {
                 Synchronize();
-                return null;
+                return null!;
             }
         }
 
@@ -475,7 +475,7 @@
         {
             var name = Consume(TokenType.IDENTIFIER, "Expect class name.");
 
-            Variable superClass = null;
+            Variable superClass = null!;
             if (Match(TokenType.LESS))
             {
                 Consume(TokenType.IDENTIFIER, "Expect superclass name.");
@@ -533,7 +533,7 @@
             // 1. get the identifier
             var name = Consume(TokenType.IDENTIFIER, "Expect variable name");
 
-            IExpr initializer = null;
+            IExpr initializer = null!;
             
             // 2. if the next token is "=", we handle the variable definition
             // and parse the expression that follows
@@ -603,7 +603,7 @@
             Consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
 
             var thenBranch = Statement();
-            Stmt elseBranch = null;
+            Stmt elseBranch = null!;
             if (Match(TokenType.ELSE))
             {
                 elseBranch = Statement();
@@ -630,7 +630,7 @@
             Stmt initializer;
             if (Match(TokenType.SEMICOLON))
             {
-                initializer = null;
+                initializer = null!;
             } else if (Match(TokenType.VAR))
             {
                 initializer = VarDeclaration();
@@ -640,14 +640,14 @@
                 initializer = ExpressionStatement();
             }
 
-            IExpr condition = null;
+            IExpr condition = null!;
             if (!Check(TokenType.SEMICOLON))
             {
                 condition = ParseExpression();
             }
             Consume(TokenType.SEMICOLON, "Expect ';' after loop condition.");
 
-            IExpr increment = null;
+            IExpr increment = null!;
             if (!Check(TokenType.RIGHT_PAREN))
             {
                 increment = ParseExpression();
@@ -656,7 +656,7 @@
 
             var body = Statement();
 
-            if (!increment.Equals(null))
+            if (!Equals(increment, null))
             {
                 body = new Block(new List<Stmt> {body, new Expression(increment)});
             }
@@ -664,7 +664,7 @@
             if (condition.Equals(null)) condition = new Literal(true);
             body = new While(condition, body);
 
-            if (!initializer.Equals(null))
+            if (!Equals(initializer, null))
             {
                 body = new Block(new List<Stmt> {initializer, body});
             }
@@ -676,7 +676,7 @@
         {
             // keep the 'return' keyword so the location can be used for error reporting
             var keyword = Previous();
-            IExpr value = null;
+            IExpr value = null!;
             if (!Check(TokenType.SEMICOLON))
             {
                 value = ParseExpression();
