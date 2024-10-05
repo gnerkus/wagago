@@ -87,7 +87,7 @@
             
             if (_isInitializer) return _closure.GetAt(0, "this");
             
-            return null;
+            return null!;
         }
 
         public WagagoFunction Bind(WagagoInstance instance)
