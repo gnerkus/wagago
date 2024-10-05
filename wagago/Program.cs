@@ -4,11 +4,15 @@
     ///     Custom language
     ///     我が語 (wagago); loosely translated to "my language"
     /// </summary>
-    public class Wagago
+    public static class Wagago
     {
         private static readonly Interpreter Interpreter = new();
         private static bool _hadError;
         private static bool _hadRuntimeError;
+        
+        private const int ConsoleError = 1;
+        private const int CompileError = 65;
+        private const int RuntimeError = 70;
 
         /**
          * Usage: wagago file.wgo
@@ -26,7 +30,7 @@
                 case > 1:
                     Console.Error.WriteLine("Usage: wagago [script]");
                     // exit code 1 is for error from console usage
-                    Environment.Exit(1);
+                    Environment.Exit(ConsoleError);
                     break;
                 case 1:
                     RunFile(args[0]);
@@ -42,11 +46,8 @@
             var contents = File.ReadAllText(filePath);
             Run(contents);
 
-            // TODO: create named constants for exit codes
-            // exit code 2 is for source code errors
-            if (_hadError) Environment.Exit(65);
-            // exit code 3 is for runtime errors
-            if (_hadRuntimeError) Environment.Exit(70);
+            if (_hadError) Environment.Exit(CompileError);
+            if (_hadRuntimeError) Environment.Exit(RuntimeError);
         }
 
         private static void RunPrompt()
@@ -67,12 +68,14 @@
                                   "error", e.GetType().Name);
             }
         }
-
-        /**
-         * Execute a line of code written in wagago
-         * 
-         * Sets _hadError to true if an error is encountered
-         */
+        
+        /// <summary>
+        ///     <p>Execute a line of code written in wagago</p>
+        ///
+        ///     <p>Sets _hadError to true if an error is encountered</p>
+        /// </summary>
+        /// <param name="source">code source</param>
+        /// <returns></returns>
         private static void Run(string source)
         {
             var scanner = new Scanner(source);
@@ -91,12 +94,12 @@
             Interpreter.Interpret(statements);
         }
 
-        public static void error(int line, string message)
+        public static void ReportError(int line, string message)
         {
             Report(line, "", message);
         }
 
-        public static void error(Token token, string message)
+        public static void ReportError(Token token, string message)
         {
             if (token.GetTokenType() == TokenType.EOF)
                 Report(token.GetLine(), " at end", message);
@@ -104,7 +107,7 @@
                 Report(token.GetLine(), " at '" + token.lexeme + "'", message);
         }
 
-        public static void runtimeError(RuntimeError error)
+        public static void ReportRuntimeError(RuntimeError error)
         {
             Console.Error.WriteLine($"{error.Message}\n[line {error.Token.GetLine()}]");
             _hadRuntimeError = true;

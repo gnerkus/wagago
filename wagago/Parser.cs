@@ -350,7 +350,7 @@
 
         private static ParserException Error(Token token, string message)
         {
-            Wagago.error(token, message);
+            Wagago.ReportError(token, message);
             return new ParserException();
         }
 

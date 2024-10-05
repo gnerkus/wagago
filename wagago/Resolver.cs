@@ -75,10 +75,10 @@
         {
             if (_currentClass == ClassType.NONE)
             {
-                Wagago.error(expr.Keyword, "Can't use 'super' outside of a class.");
+                Wagago.ReportError(expr.Keyword, "Can't use 'super' outside of a class.");
             } else if (_currentClass != ClassType.SUBCLASS)
             {
-                Wagago.error(expr.Keyword, "Can't use 'super' in a class with no superclass");
+                Wagago.ReportError(expr.Keyword, "Can't use 'super' in a class with no superclass");
             }
 
             ResolveLocal(expr, expr.Keyword);
@@ -107,7 +107,7 @@
         {
             if (_currentClass == ClassType.NONE)
             {
-                Wagago.error(expr.Keyword, "Can't use 'this' outside of a class");
+                Wagago.ReportError(expr.Keyword, "Can't use 'this' outside of a class");
                 return null;
             }
             ResolveLocal(expr, expr.Keyword);
@@ -128,7 +128,7 @@
                 var hasInScope = _scopes.Peek().TryGetValue(expr.Name.lexeme, out var scopedVariable);
                 if (hasInScope && scopedVariable == false)
                 {
-                    Wagago.error(expr.Name, "Can't read local variable in its own initializer");
+                    Wagago.ReportError(expr.Name, "Can't read local variable in its own initializer");
                 }
             }
 
@@ -201,14 +201,14 @@
         {
             if (_currentFunction == FunctionType.NONE)
             {
-                Wagago.error(stmt.Keyword, "Can't return from top-level code.");
+                Wagago.ReportError(stmt.Keyword, "Can't return from top-level code.");
             }
             
             if (stmt.Value != null)
             {
                 if (_currentFunction == FunctionType.INITIALIZER)
                 {
-                    Wagago.error(stmt.Keyword, "Can't return a value from an initializer.");
+                    Wagago.ReportError(stmt.Keyword, "Can't return a value from an initializer.");
                 }
                 Resolve(stmt.Value);
             }
@@ -241,7 +241,7 @@
 
             if (stmt.SuperClass != null && stmt.Name.lexeme.Equals(stmt.SuperClass.Name.lexeme))
             {
-                Wagago.error(stmt.SuperClass.Name, "A class can't inherit from itself.");
+                Wagago.ReportError(stmt.SuperClass.Name, "A class can't inherit from itself.");
             }
 
             if (stmt.SuperClass != null)
@@ -323,7 +323,7 @@
 
             if (scope.ContainsKey(stmtIdentifier.lexeme))
             {
-                Wagago.error(stmtIdentifier, "Already a variable with this name in this scope");
+                Wagago.ReportError(stmtIdentifier, "Already a variable with this name in this scope");
             }
             
             scope[stmtIdentifier.lexeme] = false;

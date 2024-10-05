@@ -402,7 +402,7 @@
             }
             catch (RuntimeError error)
             {
-                Wagago.runtimeError(error);
+                Wagago.ReportRuntimeError(error);
             }
         }
 
