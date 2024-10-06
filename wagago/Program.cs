@@ -107,9 +107,9 @@
                 Report(token.GetLine(), " at '" + token.lexeme + "'", message);
         }
 
-        public static void ReportRuntimeError(RuntimeError error)
+        public static void ReportRuntimeError(WagagoRuntimeException exception)
         {
-            Console.Error.WriteLine($"{error.Message}\n[line {error.Token.GetLine()}]");
+            Console.Error.WriteLine($"{exception.Message}\n[line {exception.Token.GetLine()}]");
             _hadRuntimeError = true;
         }
 
