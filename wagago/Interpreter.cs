@@ -4,7 +4,7 @@
     ///
     /// <para>native functions are stored in the global scope (environment)</para>
     /// </summary>
-    public class Interpreter : IExpr.IVisitor<object>, Stmt.IVisitor<object>
+    public class Interpreter : IExpr.IVisitor<object>, IStmt.IVisitor<object>
     {
         internal readonly Env Globals = new();
         private Env _environment;
@@ -207,7 +207,7 @@
             return LookUpVariable(expr.Name, expr);
         }
 
-        object Stmt.IVisitor<object>.VisitBlockStmt(Block stmt)
+        object IStmt.IVisitor<object>.VisitBlockStmt(Block stmt)
         {
             ExecuteBlock(stmt.Statements, new Env(_environment));
             return null!;
@@ -219,7 +219,7 @@
         /// <param name="stmt"></param>
         /// <returns></returns>
         /// <exception cref="WagagoRuntimeException"></exception>
-        object Stmt.IVisitor<object>.VisitClassStmt(Class stmt)
+        object IStmt.IVisitor<object>.VisitClassStmt(Class stmt)
         {
             object superClass = null!;
             _environment.Define(stmt.Name.lexeme, null!);
@@ -256,20 +256,20 @@
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
+        object IStmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
         {
             Evaluate(stmt.Expressn);
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitPrintStmt(Print stmt)
+        object IStmt.IVisitor<object>.VisitPrintStmt(Print stmt)
         {
             var value = Evaluate(stmt.Expression);
             Console.WriteLine(Stringify(value));
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitIfStmt(If stmt)
+        object IStmt.IVisitor<object>.VisitIfStmt(If stmt)
         {
             if (IsTruthy(Evaluate(stmt.Condition)))
             {
@@ -283,7 +283,7 @@
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitWhileStmt(While stmt)
+        object IStmt.IVisitor<object>.VisitWhileStmt(While stmt)
         {
             while (IsTruthy(Evaluate(stmt.Condition)))
             {
@@ -300,7 +300,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        object Stmt.IVisitor<object>.VisitVarStmt(Var stmt)
+        object IStmt.IVisitor<object>.VisitVarStmt(Var stmt)
         {
             object value = null!;
             if (stmt.Initializer != null)
@@ -312,7 +312,7 @@
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitReturnStmt(Return stmt)
+        object IStmt.IVisitor<object>.VisitReturnStmt(Return stmt)
         {
             object value = null!;
             if (stmt.Value != null) value = Evaluate(stmt.Value);
@@ -320,7 +320,7 @@
             throw new ReturnException(value);
         }
 
-        object Stmt.IVisitor<object>.VisitFuncStmt(Func stmt)
+        object IStmt.IVisitor<object>.VisitFuncStmt(Func stmt)
         {
             var func = new WagagoFunction(stmt, _environment, false);
             _environment.Define(stmt.Name.lexeme, func);
@@ -365,7 +365,7 @@
             return expr.Accept(this);
         }
 
-        internal void ExecuteBlock(List<Stmt> statements, Env blockEnv)
+        internal void ExecuteBlock(List<IStmt> statements, Env blockEnv)
         {
             var previous = _environment;
 
@@ -389,12 +389,12 @@
         /// <para>no value is returned as we're not evaluating an expression</para>
         /// </summary>
         /// <param name="stmt"></param>
-        private void Execute(Stmt stmt)
+        private void Execute(IStmt stmt)
         {
             stmt.Accept(this);
         }
 
-        internal void Interpret(List<Stmt> statements)
+        internal void Interpret(List<IStmt> statements)
         {
             try
             {

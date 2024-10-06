@@ -6,7 +6,7 @@
     ///     - define scopes for blocks and functions
     /// </para>
     /// </summary>
-    public class Resolver: IExpr.IVisitor<object>, Stmt.IVisitor<object>
+    public class Resolver: IExpr.IVisitor<object>, IStmt.IVisitor<object>
     {
         private readonly Interpreter _interpreter;
         private readonly Stack<Dictionary<string, bool>> _scopes = new ();
@@ -150,7 +150,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        object Stmt.IVisitor<object>.VisitBlockStmt(Block stmt)
+        object IStmt.IVisitor<object>.VisitBlockStmt(Block stmt)
         {
             BeginScope();
             Resolve(stmt.Statements);
@@ -158,19 +158,19 @@
             return null!;
         }
         
-        object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
+        object IStmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
         {
             Resolve(stmt.Expressn);
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitPrintStmt(Print stmt)
+        object IStmt.IVisitor<object>.VisitPrintStmt(Print stmt)
         {
             Resolve(stmt.Expression);
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitIfStmt(If stmt)
+        object IStmt.IVisitor<object>.VisitIfStmt(If stmt)
         {
             Resolve(stmt.Condition);
             Resolve(stmt.ThenBranch);
@@ -178,14 +178,14 @@
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitWhileStmt(While stmt)
+        object IStmt.IVisitor<object>.VisitWhileStmt(While stmt)
         {
             Resolve(stmt.Condition);
             Resolve(stmt.Body);
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitVarStmt(Var stmt)
+        object IStmt.IVisitor<object>.VisitVarStmt(Var stmt)
         {
             Declare(stmt.Identifier);
             if (stmt.Initializer != null)
@@ -197,7 +197,7 @@
             return null!;
         }
         
-        object Stmt.IVisitor<object>.VisitReturnStmt(Return stmt)
+        object IStmt.IVisitor<object>.VisitReturnStmt(Return stmt)
         {
             if (_currentFunction == FunctionType.NONE)
             {
@@ -216,7 +216,7 @@
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitFuncStmt(Func stmt)
+        object IStmt.IVisitor<object>.VisitFuncStmt(Func stmt)
         {
             Declare(stmt.Name);
             Define(stmt.Name);
@@ -231,7 +231,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        object Stmt.IVisitor<object>.VisitClassStmt(Class stmt)
+        object IStmt.IVisitor<object>.VisitClassStmt(Class stmt)
         {
             var enclosingClass = _currentClass;
             _currentClass = ClassType.CLASS;
@@ -279,7 +279,7 @@
             return null!;
         }
 
-        internal void Resolve(List<Stmt> stmtStatements)
+        internal void Resolve(List<IStmt> stmtStatements)
         {
             foreach (var stmt in stmtStatements)
             {
@@ -287,7 +287,7 @@
             }
         }
 
-        private void Resolve(Stmt stmt)
+        private void Resolve(IStmt stmt)
         {
             stmt.Accept(this);
         }

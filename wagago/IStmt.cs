@@ -1,8 +1,8 @@
 namespace Wagago
 {
-  internal abstract class Stmt
+  internal interface IStmt
   {
-    public abstract TR Accept<TR>(IVisitor<TR> visitor);
+    public TR Accept<TR>(IVisitor<TR> visitor);
 
    internal interface IVisitor<out TR> {
       TR VisitBlockStmt(Block stmt);
@@ -16,21 +16,21 @@ namespace Wagago
       TR VisitFuncStmt(Func stmt);
     }
   }
- internal class Block: Stmt
+ internal class Block: IStmt
   {
-    internal Block(List<Stmt> statements)
+    internal Block(List<IStmt> statements)
     {
       Statements = statements;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
     {
       return visitor.VisitBlockStmt(this);
     }
 
-    public readonly List<Stmt> Statements;
+    public readonly List<IStmt> Statements;
   }
- internal class Class: Stmt
+ internal class Class: IStmt
   {
     internal Class(Token name, Variable superClass, List<Func> methods)
     {
@@ -39,7 +39,7 @@ namespace Wagago
       Methods = methods;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
     {
       return visitor.VisitClassStmt(this);
     }
@@ -48,69 +48,69 @@ namespace Wagago
     public readonly Variable SuperClass;
     public readonly List<Func> Methods;
   }
- internal class Expression: Stmt
+ internal class Expression: IStmt
   {
     internal Expression(IExpr expressn)
     {
       Expressn = expressn;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
     {
       return visitor.VisitExpressionStmt(this);
     }
 
     public readonly IExpr Expressn;
   }
- internal class Print: Stmt
+ internal class Print: IStmt
   {
     internal Print(IExpr expression)
     {
       Expression = expression;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
     {
       return visitor.VisitPrintStmt(this);
     }
 
     public readonly IExpr Expression;
   }
- internal class If: Stmt
+ internal class If: IStmt
   {
-    internal If(IExpr condition, Stmt thenBranch, Stmt elseBranch)
+    internal If(IExpr condition, IStmt thenBranch, IStmt elseBranch)
     {
       Condition = condition;
       ThenBranch = thenBranch;
       ElseBranch = elseBranch;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
     {
       return visitor.VisitIfStmt(this);
     }
 
     public readonly IExpr Condition;
-    public readonly Stmt ThenBranch;
-    public readonly Stmt ElseBranch;
+    public readonly IStmt ThenBranch;
+    public readonly IStmt ElseBranch;
   }
- internal class While: Stmt
+ internal class While: IStmt
   {
-    internal While(IExpr condition, Stmt body)
+    internal While(IExpr condition, IStmt body)
     {
       Condition = condition;
       Body = body;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
     {
       return visitor.VisitWhileStmt(this);
     }
 
     public readonly IExpr Condition;
-    public readonly Stmt Body;
+    public readonly IStmt Body;
   }
- internal class Var: Stmt
+ internal class Var: IStmt
   {
     internal Var(Token identifier, IExpr initializer)
     {
@@ -118,7 +118,7 @@ namespace Wagago
       Initializer = initializer;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
     {
       return visitor.VisitVarStmt(this);
     }
@@ -126,7 +126,7 @@ namespace Wagago
     public readonly Token Identifier;
     public readonly IExpr Initializer;
   }
- internal class Return: Stmt
+ internal class Return: IStmt
   {
     internal Return(Token keyword, IExpr value)
     {
@@ -134,7 +134,7 @@ namespace Wagago
       Value = value;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
     {
       return visitor.VisitReturnStmt(this);
     }
@@ -142,22 +142,22 @@ namespace Wagago
     public readonly Token Keyword;
     public readonly IExpr Value;
   }
- internal class Func: Stmt
+ internal class Func: IStmt
   {
-    internal Func(Token name, List<Token> funcParams, List<Stmt> body)
+    internal Func(Token name, List<Token> funcParams, List<IStmt> body)
     {
       Name = name;
       FuncParams = funcParams;
       Body = body;
     }
 
-    public override TR Accept<TR>(IVisitor<TR> visitor)
+    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
     {
       return visitor.VisitFuncStmt(this);
     }
 
     public readonly Token Name;
     public readonly List<Token> FuncParams;
-    public readonly List<Stmt> Body;
+    public readonly List<IStmt> Body;
   }
 }
