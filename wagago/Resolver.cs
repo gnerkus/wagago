@@ -37,14 +37,14 @@
         {
             Resolve(expr.Value);
             ResolveLocal(expr, expr.Identifier);
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitBinaryExpr(Binary expr)
         {
             Resolve(expr.Left);
             Resolve(expr.Right);
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitInvocationExpr(Invocation expr)
@@ -55,20 +55,20 @@
                 Resolve(arg);
             }
 
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitPropGetExpr(PropGet expr)
         {
             Resolve(expr.Owner);
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitPropSetExpr(PropSet expr)
         {
             Resolve(expr.Value);
             Resolve(expr.Owner);
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitSuperExpr(Super expr)
@@ -82,25 +82,25 @@
             }
 
             ResolveLocal(expr, expr.Keyword);
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitGroupingExpr(Grouping expr)
         {
             Resolve(expr.Expression);
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitLiteralExpr(Literal expr)
         {
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitLogicalExpr(Logical expr)
         {
             Resolve(expr.Left);
             Resolve(expr.Right);
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitThisExpr(This expr)
@@ -108,16 +108,16 @@
             if (_currentClass == ClassType.NONE)
             {
                 Wagago.ReportError(expr.Keyword, "Can't use 'this' outside of a class");
-                return null;
+                return null!;
             }
             ResolveLocal(expr, expr.Keyword);
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitUnaryExpr(Unary expr)
         {
             Resolve(expr.Right);
-            return null;
+            return null!;
         }
 
         object IExpr.IVisitor<object>.VisitVariableExpr(Variable expr)
@@ -126,14 +126,14 @@
             if (_scopes.Count > 0)
             {
                 var hasInScope = _scopes.Peek().TryGetValue(expr.Name.lexeme, out var scopedVariable);
-                if (hasInScope && scopedVariable == false)
+                if (hasInScope && !scopedVariable)
                 {
                     Wagago.ReportError(expr.Name, "Can't read local variable in its own initializer");
                 }
             }
 
             ResolveLocal(expr, expr.Name);
-            return null;
+            return null!;
         }
 
         /// <summary>
@@ -155,19 +155,19 @@
             BeginScope();
             Resolve(stmt.Statements);
             EndScope();
-            return null;
+            return null!;
         }
         
         object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
         {
             Resolve(stmt.Expressn);
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitPrintStmt(Print stmt)
         {
             Resolve(stmt.Expression);
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitIfStmt(If stmt)
@@ -175,14 +175,14 @@
             Resolve(stmt.Condition);
             Resolve(stmt.ThenBranch);
             if (stmt.ElseBranch != null) Resolve(stmt.ElseBranch);
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitWhileStmt(While stmt)
         {
             Resolve(stmt.Condition);
             Resolve(stmt.Body);
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitVarStmt(Var stmt)
@@ -194,7 +194,7 @@
             }
 
             Define(stmt.Identifier);
-            return null;
+            return null!;
         }
         
         object Stmt.IVisitor<object>.VisitReturnStmt(Return stmt)
@@ -213,7 +213,7 @@
                 Resolve(stmt.Value);
             }
 
-            return null;
+            return null!;
         }
 
         object Stmt.IVisitor<object>.VisitFuncStmt(Func stmt)
@@ -223,7 +223,7 @@
             
             ResolveFunction(stmt, FunctionType.FUNCTION);
             
-            return null;
+            return null!;
         }
         
         /// <summary>
@@ -276,7 +276,7 @@
             if (stmt.SuperClass != null) EndScope();
 
             _currentClass = enclosingClass;
-            return null;
+            return null!;
         }
 
         internal void Resolve(List<Stmt> stmtStatements)
