@@ -48,7 +48,7 @@
                 ScanToken();
             }
 
-            _tokens.Add(new Token(TokenType.EOF, "", null, _line));
+            _tokens.Add(new Token(TokenType.EOF, "", null!, _line));
             return _tokens;
         }
 
@@ -269,18 +269,12 @@
          * Move the cursor forward 'count' times
          * Return the character just behind the current cursor position
          */
-        private char Advance(int count)
+        private void Advance(int count)
         {
             _current += count;
-            return _sourceCharArray[_current - 1];
         }
 
-        private void AddToken(TokenType type)
-        {
-            AddToken(type, null);
-        }
-
-        private void AddToken(TokenType type, object literal)
+        private void AddToken(TokenType type, object literal = null!)
         {
             // At this point in the program,
             // _current has been incremented by the Advance method

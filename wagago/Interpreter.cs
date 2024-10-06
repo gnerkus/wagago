@@ -4,7 +4,7 @@
     ///
     /// <para>native functions are stored in the global scope (environment)</para>
     /// </summary>
-    public class Interpreter : IExpr.IVisitor<object>, Stmt.IVisitor<object>
+    public class Interpreter : IExpr.IVisitor<object>, IStmt.IVisitor<object>
     {
         internal readonly Env Globals = new();
         private Env _environment;
@@ -66,8 +66,8 @@
         /// </summary>
         /// <param name="expr"></param>
         /// <returns></returns>
-        /// <exception cref="RuntimeError">Thrown when the expressions callee is not a callable</exception>
-        /// <exception cref="RuntimeError">Thrown when there are too few or too many function arguments</exception>
+        /// <exception cref="WagagoRuntimeException">Thrown when the expressions callee is not a callable</exception>
+        /// <exception cref="WagagoRuntimeException">Thrown when there are too few or too many function arguments</exception>
         object IExpr.IVisitor<object>.VisitInvocationExpr(Invocation expr)
         {
             var callee = Evaluate(expr.Callee);
@@ -76,12 +76,12 @@
 
             if (callee is not IWagagoCallable callable)
             {
-                throw new RuntimeError(expr.Paren, "Can only call functions and classes");
+                throw new WagagoRuntimeException(expr.Paren, "Can only call functions and classes");
             }
 
             if (args.Count != callable.Arity())
             {
-                throw new RuntimeError(expr.Paren,
+                throw new WagagoRuntimeException(expr.Paren,
                     $"Expected {callable.Arity()} arguments but got {args.Count}.");
             }
 
@@ -96,7 +96,7 @@
                 return instance.Get(expr.Name);
             }
 
-            throw new RuntimeError(expr.Name, "Only instances have properties");
+            throw new WagagoRuntimeException(expr.Name, "Only instances have properties");
         }
 
         object IExpr.IVisitor<object>.VisitPropSetExpr(PropSet expr)
@@ -105,7 +105,7 @@
 
             if (owner is not WagagoInstance instance)
             {
-                throw new RuntimeError(expr.Name, "Only instances have fields");
+                throw new WagagoRuntimeException(expr.Name, "Only instances have fields");
             }
 
             var value = Evaluate(expr.Value);
@@ -139,7 +139,7 @@
 
             if (method == null)
             {
-                throw new RuntimeError(expr.Method, $"Undefined property '{expr.Method.lexeme}'.");
+                throw new WagagoRuntimeException(expr.Method, $"Undefined property '{expr.Method.lexeme}'.");
             }
             
             return method.Bind(obj);
@@ -207,7 +207,7 @@
             return LookUpVariable(expr.Name, expr);
         }
 
-        object Stmt.IVisitor<object>.VisitBlockStmt(Block stmt)
+        object IStmt.IVisitor<object>.VisitBlockStmt(Block stmt)
         {
             ExecuteBlock(stmt.Statements, new Env(_environment));
             return null!;
@@ -218,8 +218,8 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        /// <exception cref="RuntimeError"></exception>
-        object Stmt.IVisitor<object>.VisitClassStmt(Class stmt)
+        /// <exception cref="WagagoRuntimeException"></exception>
+        object IStmt.IVisitor<object>.VisitClassStmt(Class stmt)
         {
             object superClass = null!;
             _environment.Define(stmt.Name.lexeme, null!);
@@ -229,7 +229,7 @@
                 superClass = Evaluate(stmt.SuperClass);
                 if (superClass is not WagagoClass)
                 {
-                    throw new RuntimeError(stmt.SuperClass.Name, "Superclass must be a class");
+                    throw new WagagoRuntimeException(stmt.SuperClass.Name, "Superclass must be a class");
                 }
                 
                 // add a ref to the super class to the environment
@@ -256,20 +256,20 @@
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
+        object IStmt.IVisitor<object>.VisitExpressionStmt(Expression stmt)
         {
             Evaluate(stmt.Expressn);
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitPrintStmt(Print stmt)
+        object IStmt.IVisitor<object>.VisitPrintStmt(Print stmt)
         {
             var value = Evaluate(stmt.Expression);
             Console.WriteLine(Stringify(value));
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitIfStmt(If stmt)
+        object IStmt.IVisitor<object>.VisitIfStmt(If stmt)
         {
             if (IsTruthy(Evaluate(stmt.Condition)))
             {
@@ -283,7 +283,7 @@
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitWhileStmt(While stmt)
+        object IStmt.IVisitor<object>.VisitWhileStmt(While stmt)
         {
             while (IsTruthy(Evaluate(stmt.Condition)))
             {
@@ -300,7 +300,7 @@
         /// </summary>
         /// <param name="stmt"></param>
         /// <returns></returns>
-        object Stmt.IVisitor<object>.VisitVarStmt(Var stmt)
+        object IStmt.IVisitor<object>.VisitVarStmt(Var stmt)
         {
             object value = null!;
             if (stmt.Initializer != null)
@@ -312,7 +312,7 @@
             return null!;
         }
 
-        object Stmt.IVisitor<object>.VisitReturnStmt(Return stmt)
+        object IStmt.IVisitor<object>.VisitReturnStmt(Return stmt)
         {
             object value = null!;
             if (stmt.Value != null) value = Evaluate(stmt.Value);
@@ -320,7 +320,7 @@
             throw new ReturnException(value);
         }
 
-        object Stmt.IVisitor<object>.VisitFuncStmt(Func stmt)
+        object IStmt.IVisitor<object>.VisitFuncStmt(Func stmt)
         {
             var func = new WagagoFunction(stmt, _environment, false);
             _environment.Define(stmt.Name.lexeme, func);
@@ -357,7 +357,7 @@
 
             if (left is string || right is string) return (string)left + (string)right;
 
-            throw new RuntimeError(operatr, "Operands must be two numbers or two strings");
+            throw new WagagoRuntimeException(operatr, "Operands must be two numbers or two strings");
         }
 
         private object Evaluate(IExpr expr)
@@ -365,7 +365,7 @@
             return expr.Accept(this);
         }
 
-        internal void ExecuteBlock(List<Stmt> statements, Env blockEnv)
+        internal void ExecuteBlock(List<IStmt> statements, Env blockEnv)
         {
             var previous = _environment;
 
@@ -389,18 +389,18 @@
         /// <para>no value is returned as we're not evaluating an expression</para>
         /// </summary>
         /// <param name="stmt"></param>
-        private void Execute(Stmt stmt)
+        private void Execute(IStmt stmt)
         {
             stmt.Accept(this);
         }
 
-        internal void Interpret(List<Stmt> statements)
+        internal void Interpret(List<IStmt> statements)
         {
             try
             {
                 foreach (var stmt in statements) Execute(stmt);
             }
-            catch (RuntimeError error)
+            catch (WagagoRuntimeException error)
             {
                 Wagago.ReportRuntimeError(error);
             }
@@ -429,13 +429,13 @@
         private static void CheckNumberOperand(Token operatr, object operand)
         {
             if (operand is double) return;
-            throw new RuntimeError(operatr, "Operand must be a number");
+            throw new WagagoRuntimeException(operatr, "Operand must be a number");
         }
 
         private static void CheckNumberOperands(Token operatr, object left, object right)
         {
             if (left is double && right is double) return;
-            throw new RuntimeError(operatr, "Operand must be a number");
+            throw new WagagoRuntimeException(operatr, "Operand must be a number");
         }
 
         /// <summary>

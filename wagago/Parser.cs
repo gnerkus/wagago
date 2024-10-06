@@ -444,9 +444,9 @@
         /// Returns a list of declarations according to the program's grammar
         /// </summary>
         /// <returns></returns>
-        internal List<Stmt> Parse()
+        internal List<IStmt> Parse()
         {
-            var statements = new List<Stmt>();
+            var statements = new List<IStmt>();
             while (!IsAtEnd()) statements.Add(Declaration());
 
             return statements;
@@ -456,7 +456,7 @@
         /// Parse a declaration
         /// </summary>
         /// <returns></returns>
-        private Stmt Declaration()
+        private IStmt Declaration()
         {
             try
             {
@@ -471,7 +471,7 @@
             }
         }
 
-        private Stmt ClassDeclaration()
+        private IStmt ClassDeclaration()
         {
             var name = Consume(TokenType.IDENTIFIER, "Expect class name.");
 
@@ -494,7 +494,7 @@
 
             return new Class(name, superClass, methods);
         }
-        private Stmt FunctionDeclaration(string kind)
+        private IStmt FunctionDeclaration(string kind)
         {
             // 1. function name
             var name = Consume(TokenType.IDENTIFIER, $"Expect {kind} name.");
@@ -528,7 +528,7 @@
         /// <para>For example, it parses the "a = 2" in "var a = 2"</para>
         /// </summary>
         /// <returns>a Var statement node</returns>
-        private Stmt VarDeclaration()
+        private IStmt VarDeclaration()
         {
             // 1. get the identifier
             var name = Consume(TokenType.IDENTIFIER, "Expect variable name");
@@ -554,7 +554,7 @@
         ///     <para>In both cases, the cursor advances after the match</para>
         /// </summary>
         /// <returns></returns>
-        private Stmt Statement()
+        private IStmt Statement()
         {
             if (Match(TokenType.FOR)) return ForStatement();
             if (Match(TokenType.IF)) return IfStatement();
@@ -565,9 +565,9 @@
             return Match(TokenType.LEFT_BRACE) ? new Block(ParserBlock()) : ExpressionStatement();
         }
 
-        private List<Stmt> ParserBlock()
+        private List<IStmt> ParserBlock()
         {
-            var statements = new List<Stmt>();
+            var statements = new List<IStmt>();
 
             while (!Check(TokenType.RIGHT_BRACE) && !IsAtEnd())
             {
@@ -582,28 +582,28 @@
         ///     the 'print' token has been consumed so we parse the expression
         /// </summary>
         /// <returns></returns>
-        private Stmt PrintStatement()
+        private IStmt PrintStatement()
         {
             var expr = ParseExpression();
             Consume(TokenType.SEMICOLON, "Expect ';' after value.");
             return new Print(expr);
         }
 
-        private Stmt ExpressionStatement()
+        private IStmt ExpressionStatement()
         {
             var expr = ParseExpression();
             Consume(TokenType.SEMICOLON, "Expect ';' after expression.");
             return new Expression(expr);
         }
 
-        private Stmt IfStatement()
+        private IStmt IfStatement()
         {
             Consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
             var condition = ParseExpression();
             Consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
 
             var thenBranch = Statement();
-            Stmt elseBranch = null!;
+            IStmt elseBranch = null!;
             if (Match(TokenType.ELSE))
             {
                 elseBranch = Statement();
@@ -612,7 +612,7 @@
             return new If(condition, thenBranch, elseBranch);
         }
         
-        private Stmt WhileStatement()
+        private IStmt WhileStatement()
         {
             Consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'");
             var condition = ParseExpression();
@@ -623,11 +623,11 @@
             return new While(condition, body);
         }
         
-        private Stmt ForStatement()
+        private IStmt ForStatement()
         {
             Consume(TokenType.LEFT_PAREN, "Expect '(' after 'for'.");
 
-            Stmt initializer;
+            IStmt initializer;
             if (Match(TokenType.SEMICOLON))
             {
                 initializer = null!;
@@ -658,7 +658,7 @@
 
             if (!Equals(increment, null))
             {
-                body = new Block(new List<Stmt> {body, new Expression(increment)});
+                body = new Block(new List<IStmt> {body, new Expression(increment)});
             }
 
             if (condition.Equals(null)) condition = new Literal(true);
@@ -666,13 +666,13 @@
 
             if (!Equals(initializer, null))
             {
-                body = new Block(new List<Stmt> {initializer, body});
+                body = new Block(new List<IStmt> {initializer, body});
             }
             
             return body;
         }
         
-        private Stmt ReturnStatement()
+        private IStmt ReturnStatement()
         {
             // keep the 'return' keyword so the location can be used for error reporting
             var keyword = Previous();

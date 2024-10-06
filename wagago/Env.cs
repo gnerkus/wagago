@@ -28,7 +28,7 @@
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        /// <exception cref="RuntimeError"></exception>
+        /// <exception cref="WagagoRuntimeException"></exception>
         public object Get(Token name)
         {
             if (_values.TryGetValue(name.lexeme, out var varValue))
@@ -41,7 +41,7 @@
                 return Enclosing.Get(name);
             }
 
-            throw new RuntimeError(name, $"Undefined variable '{name.lexeme}'.");
+            throw new WagagoRuntimeException(name, $"Undefined variable '{name.lexeme}'.");
         }
 
         public void Assign(Token name, object value)
@@ -53,7 +53,7 @@
             }
 
             if (Enclosing == null)
-                throw new RuntimeError(name, $"Undefined variable '{name.lexeme}'.");
+                throw new WagagoRuntimeException(name, $"Undefined variable '{name.lexeme}'.");
             Enclosing.Assign(name, value);
         }
 
