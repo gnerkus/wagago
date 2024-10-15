@@ -34,9 +34,10 @@ namespace Wagago
 
  internal class ImportModule : IStmt
  {
-   internal ImportModule(Token name)
+   internal ImportModule(Token name, List<Func> moduleFuncs)
    {
      Name = name;
+     ModuleFuncs = moduleFuncs;
    }
 
    public TR Accept<TR>(IStmt.IVisitor<TR> visitor)
@@ -45,6 +46,7 @@ namespace Wagago
    }
 
    public readonly Token Name;
+   public readonly List<Func> ModuleFuncs;
  }
  internal class Class: IStmt
   {

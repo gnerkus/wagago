@@ -478,17 +478,12 @@
         {
             var name = Consume(TokenType.IDENTIFIER, "Expect module name.");
 
-            /**
-             * 1. use the name to search for a matching .wgg file
-             * 2. read the string from the file
-             * 3. create a scanner with string as source
-             * 4. get a list of statements using Parse
-             */
-
             var moduleContent = File.ReadAllText($"{name.lexeme}.wgg");
-            
-            // TODO: parse module source and get statements
-            var moduleFuncs = new List<Func>();
+            var scanner = new Scanner(moduleContent);
+            var tokens = scanner.ScanTokens();
+            var parser = new Parser(tokens);
+            var moduleStatements = parser.Parse();
+            var moduleFuncs = moduleStatements.Cast<Func>().ToList();
 
             return new ImportModule(name, moduleFuncs);
         }
