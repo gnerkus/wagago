@@ -225,6 +225,11 @@
             
             return null!;
         }
+
+        object IStmt.IVisitor<object>.VisitImportStmt(ImportModule stmt)
+        {
+            return null!;
+        }
         
         /// <summary>
         /// creates a scope for the 'this' variable within the class' scope

@@ -213,6 +213,11 @@
             return null!;
         }
 
+        object IStmt.IVisitor<object>.VisitImportStmt(ImportModule stmt)
+        {
+            return null;
+        }
+
         /// <summary>
         ///     Execute class definition; define a class
         /// </summary>
