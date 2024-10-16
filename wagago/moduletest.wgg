@@ -1,1 +1,4 @@
 ﻿import math;
+
+var a = math.linear(2, 2, 1);
+print a;

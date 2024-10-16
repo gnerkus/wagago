@@ -91,12 +91,12 @@
         object IExpr.IVisitor<object>.VisitPropGetExpr(PropGet expr)
         {
             var owner = Evaluate(expr.Owner);
-            if (owner is WagagoInstance instance)
+            return owner switch
             {
-                return instance.Get(expr.Name);
-            }
-
-            throw new WagagoRuntimeException(expr.Name, "Only instances have properties");
+                WagagoInstance instance => instance.Get(expr.Name),
+                WagagoModule module => module.Get(expr.Name),
+                _ => throw new WagagoRuntimeException(expr.Name, "Only instances have properties")
+            };
         }
 
         object IExpr.IVisitor<object>.VisitPropSetExpr(PropSet expr)

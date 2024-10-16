@@ -15,7 +15,7 @@
             return $"'{Name.lexeme}' module";
         }
 
-        public WagagoFunction FindModuleFunc(Token name)
+        public object Get(Token name)
         {
             var moduleFunc = _moduleFuncs[name.lexeme];
 
