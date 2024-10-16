@@ -484,6 +484,8 @@
             var parser = new Parser(tokens);
             var moduleStatements = parser.Parse();
             var moduleFuncs = moduleStatements.Cast<Func>().ToList();
+            
+            Consume(TokenType.SEMICOLON, "Expect ';' after import declaration.");
 
             return new ImportModule(name, moduleFuncs);
         }
