@@ -228,6 +228,14 @@
 
         object IStmt.IVisitor<object>.VisitImportStmt(ImportModule stmt)
         {
+            Declare(stmt.Name);
+            Define(stmt.Name);
+
+            foreach (var func in stmt.ModuleFuncs)
+            {
+                ResolveFunction(func, FunctionType.FUNCTION);
+            }
+            
             return null!;
         }
         

@@ -215,7 +215,17 @@
 
         object IStmt.IVisitor<object>.VisitImportStmt(ImportModule stmt)
         {
-            return null;
+            var moduleFuncs = new Dictionary<string, WagagoFunction>();
+            foreach (var moduleFunc in stmt.ModuleFuncs)
+            {
+                var func = new WagagoFunction(moduleFunc, _environment, moduleFunc.Name.lexeme.Equals("init"));
+                moduleFuncs.Add(moduleFunc.Name.lexeme, func);
+            }
+            
+            var instance = new WagagoModule(stmt.Name, moduleFuncs);
+            _environment.Define(stmt.Name.lexeme, instance);
+
+            return null!;
         }
 
         /// <summary>
