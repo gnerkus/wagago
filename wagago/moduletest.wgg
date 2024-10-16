@@ -1,4 +1,11 @@
 ﻿import math;
 
+fun linear(independent, slope) {
+  return independent * slope;
+}
+
 var a = math.linear(2, 2, 1);
 print a;
+
+var b = linear(2, 2);
+print b;
