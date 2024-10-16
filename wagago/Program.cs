@@ -15,9 +15,9 @@
         private const int RuntimeError = 70;
 
         /**
-         * Usage: wagago file.wgo
+         * Usage: wagago file.wgg
          * 
-         * file.wgo contains code written in wagago
+         * file.wgg contains code written in wagago
          * 
          * Usage: wagago
          * 

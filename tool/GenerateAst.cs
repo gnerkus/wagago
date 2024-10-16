@@ -37,6 +37,7 @@
                         new List<string>
                         {
                             "Block          : List<Stmt> statements",
+                            "ImportModule   : Token name, List<Func> moduleFuncs",
                             "Class          : Token name, Variable superClass, List<Func> methods",
                             "Expression     : Expr expressn",
                             "Print          : Expr expression",

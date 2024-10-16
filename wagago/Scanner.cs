@@ -9,6 +9,7 @@
         {
             { "and", TokenType.AND },
             { "class", TokenType.CLASS },
+            { "import", TokenType.IMPORT },
             { "else", TokenType.ELSE },
             { "false", TokenType.FALSE },
             { "for", TokenType.FOR },

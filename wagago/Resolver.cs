@@ -225,6 +225,19 @@
             
             return null!;
         }
+
+        object IStmt.IVisitor<object>.VisitImportStmt(ImportModule stmt)
+        {
+            Declare(stmt.Name);
+            Define(stmt.Name);
+
+            foreach (var func in stmt.ModuleFuncs)
+            {
+                ResolveFunction(func, FunctionType.FUNCTION);
+            }
+            
+            return null!;
+        }
         
         /// <summary>
         /// creates a scope for the 'this' variable within the class' scope

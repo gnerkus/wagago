@@ -5,10 +5,12 @@
     ///     <para>Rules are (precedence increases downwards):</para>
     ///     <code>
     ///         program         → declaration* EOF ;
-    ///         declaration     → classDecl
+    ///         declaration     → importDecl
+    ///                         | classDecl
     ///                         | funDecl
     ///                         | varDecl
     ///                         | statement ;
+    ///         importDecl      → "import" IDENTIFIER ";" ;
     ///         varDecl         → "var" IDENTIFIER ( "=" expression )? ";" ;
     ///         classDecl       → "class" IDENTIFIER ( "&lt;" IDENTIFIER )?
     ///                           "{" function* "}" ;
@@ -460,6 +462,7 @@
         {
             try
             {
+                if (Match(TokenType.IMPORT)) return ImportDeclaration();
                 if (Match(TokenType.CLASS)) return ClassDeclaration();
                 if (Match(TokenType.FUN)) return FunctionDeclaration("function");
                 return Match(TokenType.VAR) ? VarDeclaration() : Statement();
@@ -469,6 +472,22 @@
                 Synchronize();
                 return null!;
             }
+        }
+
+        private IStmt ImportDeclaration()
+        {
+            var name = Consume(TokenType.IDENTIFIER, "Expect module name.");
+
+            var moduleContent = File.ReadAllText($"{name.lexeme}.wgg");
+            var scanner = new Scanner(moduleContent);
+            var tokens = scanner.ScanTokens();
+            var parser = new Parser(tokens);
+            var moduleStatements = parser.Parse();
+            var moduleFuncs = moduleStatements.Cast<Func>().ToList();
+            
+            Consume(TokenType.SEMICOLON, "Expect ';' after import declaration.");
+
+            return new ImportModule(name, moduleFuncs);
         }
 
         private IStmt ClassDeclaration()

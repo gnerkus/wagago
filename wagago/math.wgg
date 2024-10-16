@@ -1,0 +1,3 @@
+﻿fun linear(independent, slope, intercept) {
+    return independent * slope + intercept;
+}

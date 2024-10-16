@@ -91,12 +91,12 @@
         object IExpr.IVisitor<object>.VisitPropGetExpr(PropGet expr)
         {
             var owner = Evaluate(expr.Owner);
-            if (owner is WagagoInstance instance)
+            return owner switch
             {
-                return instance.Get(expr.Name);
-            }
-
-            throw new WagagoRuntimeException(expr.Name, "Only instances have properties");
+                WagagoInstance instance => instance.Get(expr.Name),
+                WagagoModule module => module.Get(expr.Name),
+                _ => throw new WagagoRuntimeException(expr.Name, "Only instances have properties")
+            };
         }
 
         object IExpr.IVisitor<object>.VisitPropSetExpr(PropSet expr)
@@ -210,6 +210,21 @@
         object IStmt.IVisitor<object>.VisitBlockStmt(Block stmt)
         {
             ExecuteBlock(stmt.Statements, new Env(_environment));
+            return null!;
+        }
+
+        object IStmt.IVisitor<object>.VisitImportStmt(ImportModule stmt)
+        {
+            var moduleFuncs = new Dictionary<string, WagagoFunction>();
+            foreach (var moduleFunc in stmt.ModuleFuncs)
+            {
+                var func = new WagagoFunction(moduleFunc, _environment, moduleFunc.Name.lexeme.Equals("init"));
+                moduleFuncs.Add(moduleFunc.Name.lexeme, func);
+            }
+            
+            var instance = new WagagoModule(stmt.Name, moduleFuncs);
+            _environment.Define(stmt.Name.lexeme, instance);
+
             return null!;
         }
 
