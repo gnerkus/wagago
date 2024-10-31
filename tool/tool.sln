@@ -13,4 +13,7 @@ Global
 		{AB391998-3DD1-4EE6-B3CB-15D0E089972C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB391998-3DD1-4EE6-B3CB-15D0E089972C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(RiderSharedRunConfigurations) = postSolution
+		File = generate.run\tool-dir.run.xml
+	EndGlobalSection
 EndGlobal
