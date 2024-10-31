@@ -69,9 +69,9 @@
             using var streamWriter = new StreamWriter(path);
             streamWriter.WriteLine("namespace Wagago");
             streamWriter.WriteLine("{");
-            streamWriter.WriteLine($"  internal abstract class {baseName}");
+            streamWriter.WriteLine($"  internal interface {baseName}");
             streamWriter.WriteLine("  {");
-            streamWriter.WriteLine("    public abstract TR Accept<TR>(IVisitor<TR> visitor);");
+            streamWriter.WriteLine("    public TR Accept<TR>(IVisitor<TR> visitor);");
             streamWriter.WriteLine();
 
             DefineVisitor(streamWriter, baseName, types);
@@ -145,7 +145,7 @@
             writer.WriteLine("    }");
             
             writer.WriteLine();
-            writer.WriteLine("    public override TR Accept<TR>(IVisitor<TR> visitor)");
+            writer.WriteLine($"    public TR Accept<TR>({baseName}.IVisitor<TR> visitor)");
             writer.WriteLine("    {");
             writer.WriteLine($"      return visitor.Visit{className}{baseName}(this);");
             writer.WriteLine("    }");
